@@ -11,7 +11,6 @@ class Hand extends Model
     use HasFactory;
 
     
-    
     public function card()
     {
         return $this->belongsTo(Card::class);
