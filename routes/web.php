@@ -29,4 +29,4 @@ Route::get('/games/{hand}/card', [App\Http\Controllers\GameController::class, 'e
 Route::get('/games/{hand}/ermy', [App\Http\Controllers\GameController::class, 'ermy'])->name('ermy');
 Route::get('/games/{hand}/bsra', [App\Http\Controllers\GameController::class, 'bsra'])->name('bsra');
 Route::post('/games/{hand}/bdel', [App\Http\Controllers\GameController::class, 'bdel'])->name('bdel');
-
+Route::get('/games/{score}/screw', [App\Http\Controllers\GameController::class, 'screw'])->name('screw');

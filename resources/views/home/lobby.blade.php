@@ -30,4 +30,5 @@
 
 @else
 <h5 class="mt-3"> No Games to show for now!</h5>
+<meta http-equiv="refresh" content="5">
 @endif

@@ -17,4 +17,5 @@ class Score extends Model
     {
         return $this->belongsTo(Game::class);
     }
+    protected $hidden = ['user'];
 }

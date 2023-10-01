@@ -30,10 +30,13 @@ class HomeController extends Controller
         
         $score = Auth::user()->score;
         if ($score && $score->game->scores->count() == 2) {
+            if ($score->game->gameIsFinished()){
+                return 'the game summary here';
+            }
+            $elkomaElmqlopaCount = Hand::where('game_id', $score->game->id)->where('user_id', 1)->count();
             $awlElkomaElmkshofa = $score->game->getAwlElkomaElmkshofa();
             $awlElkomaElmqlopa = $score->game->getAwlElkomaElmqlopa();
-            $elkomaElmkshofaCount = Hand::where('user_id', 2)->count();
-            $elkomaElmqlopaCount = Hand::where('user_id', 1)->count();
+            $elkomaElmkshofaCount = Hand::where('game_id', $score->game->id)->where('user_id', 2)->count();
         }
         return view('home', [
             'games' => Game::all(),

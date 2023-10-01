@@ -52,4 +52,16 @@ class User extends Authenticatable
     {
         return $this->hasMany(Hand::class);
     }
+    public function calculateRoundScores()
+    {
+        $score = 0;
+        foreach ($this->hands as $hand) {
+            if ($hand->card->value > 10 && $hand->card->value < 14) {
+                $score += 10;
+            } else {
+                $score += $hand->card->value;
+            }
+        }
+        return $score;
+    }
 }
