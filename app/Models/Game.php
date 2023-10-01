@@ -16,7 +16,11 @@ class Game extends Model
     }
     public function scores()
     {
-        return $this->hasMany(Score::class, 'game_id');
+        return $this->hasMany(Score::class);
+    }
+    public function hands()
+    {
+        return $this->hasMany(Hand::class);
     }
 
     public function setHand(Card $card, $user_id)
@@ -46,7 +50,7 @@ class Game extends Model
                     $this->setHand($card, 1);
                 }
             } elseif ($card->value == 12) { //كعب داير
-                for ($i = 0; $i < 4; $i++) {
+                for ($i = 0; $i < 2; $i++) {
                     $this->setHand($card, 1);
                 }
             } elseif ($card->value == 13) { // هات وخد
@@ -81,16 +85,16 @@ class Game extends Model
     {
         foreach ($this->scores as $score) { // اللاعبين
             for ($i = 0; $i < 4; $i++) {
-                $hand = Hand::where('user_id', 1)->firstOrFail();
+                $hand = Hand::where('game_id', $this->id)->where('user_id', 1)->first();
                 $hand->user_id = $score->user->id;
                 $hand->index = $i + 1;
                 $hand->save();
             }
         }
     }
-    public function startgame()
+    public function startRound()
     {
-        $this->cycle = 1;
+        $this->cycle = 1; // not used yet
         $this->save();
         $this->funat(1); //كومة مقلوبة
         $this->wz3();
@@ -98,7 +102,7 @@ class Game extends Model
 
     public function getAwlElkomaElmkshofa()
     {
-        $awlElkomaElmkshofa = Hand::where('user_id', 2)->orderBy('index', 'DESC')->first();
+        $awlElkomaElmkshofa = Hand::where('game_id', $this->id)->where('user_id', 2)->orderBy('index', 'DESC')->first();
         if (!$awlElkomaElmkshofa) {
             $awlElkomaElmkshofa = $this->getAwlElkomaElmqlopa();
             $awlElkomaElmkshofa->user_id = 2;
@@ -109,7 +113,12 @@ class Game extends Model
     }
     public function getAwlElkomaElmqlopa()
     {
-        return Hand::where('user_id', 1)->first();
+        $awlElkomaElmqlopa = Hand::where('game_id', $this->id)->where('user_id', 1)->first();
+        if (!$awlElkomaElmqlopa) {
+            $this->endRound(); //تفنيطة واحدة
+            $awlElkomaElmqlopa = Hand::where('game_id', $this->id)->where('user_id', 1)->first();
+        }
+        return $awlElkomaElmqlopa;
     }
 
     public function getPlayerInOrder($order, User $user)
@@ -139,7 +148,87 @@ class Game extends Model
         $currentPlayerTurn->turn = false;
         $currentPlayerTurn->save();
         $nextPlayerTurn = $this->getPlayerInOrder(1, $currentPlayerTurn->user);
-        $nextPlayerTurn->score->turn = true;
-        $nextPlayerTurn->score->save();
+        if ($nextPlayerTurn->score->screw) {
+            $this->endRound();
+        } else {
+            $nextPlayerTurn->score->turn = true;
+            $nextPlayerTurn->score->save();
+        }
+    }
+    public function doubleScrewIfLosser(User $winnerPlayerInThisRound)
+    {
+        if (Score::where('game_id', $this->id)->where('screw', true)->first()) {
+            $screwPlayer = Score::where('game_id', $this->id)->where('screw', true)->first()->user;
+            if ($screwPlayer->id != $winnerPlayerInThisRound->id) {
+                $screwPlayer->score->score += $screwPlayer->calculateRoundScores();
+                $screwPlayer->score->save();
+            }
+        }
+    }
+
+    public function playerWithLessScore()
+    {
+        /* $screwPlayer = Score::where('game_id', $this->id)->where('screw', true)->first();
+        if ($screwPlayer && $screwPlayer->user->calculateRoundScores() == 0) {
+            return User::find($screwPlayer->user_id);
+        }*/ //not tested 
+        $lessScoreInThisRound = 0;
+        foreach ($this->scores as $score) {
+            $playerRoundScore = $score->user->calculateRoundScores();
+            if ($score->id == $this->admin->score->id) {
+                $lessScoreInThisRound = $playerRoundScore;
+                $winnerPlayerInThisRound = $this->admin;
+            } elseif ($playerRoundScore < $lessScoreInThisRound || ($playerRoundScore == $lessScoreInThisRound && $score->screw)) {
+                $lessScoreInThisRound = $playerRoundScore;
+                $winnerPlayerInThisRound = $score->user;
+            }
+        }
+        return User::find($winnerPlayerInThisRound->id);
+    }
+    public function endRound()
+    {
+        // حد خلص كل كروته كمل اللفة واقفل كأنه سكرو
+        //خلصنا عدد التفنيطات المتاحة للراوند
+
+        foreach ($this->scores as $score) {
+            $score->score += $score->user->calculateRoundScores();
+            $score->save();
+        }
+        $winnerPlayerInThisRound = $this->playerWithLessScore();
+        $winnerPlayerInThisRound->score->score -= $winnerPlayerInThisRound->calculateRoundScores();
+        $winnerPlayerInThisRound->score->save();
+        $this->doubleScrewIfLosser($winnerPlayerInThisRound);
+        $this->ermyAllCards();
+        $this->startRound();
+        return $winnerPlayerInThisRound;
+    }
+    public function hasScrewPlayer()
+    {
+        return $this->scores->where('screw', true)->first();
+    }
+    public function ermyAllCards()
+    {
+        $winner = $this->playerWithLessScore();
+        foreach ($this->hands as $hand) {
+            $hand->user_id = 1;
+            $hand->save();
+        }
+        foreach ($this->scores as $score) {
+            $score->screw = false;
+            $score->turn = false;
+            $score->save();
+        }
+        $winner->score->turn = true;
+        $winner->score->save();
+    }
+
+    public function gameIsFinished()
+    {
+        foreach ($this->scores as $score) {
+            if ($score->score >= $this->lose_score) {
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -101,7 +101,7 @@ class GameController extends Controller
         $score->save();
         $game = Game::where('id', $game->id)->firstOrFail();
         if ($game->scores->count() == 2)
-            $game->startGame();
+            $game->startRound();
         return redirect()->route('home');
     }
     public function leave(Game $game)
@@ -137,7 +137,7 @@ class GameController extends Controller
     public function bsra(Hand $hand)
     {
         $awlElkomaElmkshofa = $hand->game->getAwlElkomaElmkshofa();
-        if ($hand->card->id == $awlElkomaElmkshofa->card->id || abs($hand->card->value - $awlElkomaElmkshofa->card->value == 25)) {
+        if ($hand->card->id == $awlElkomaElmkshofa->card->id || abs($hand->card->value - $awlElkomaElmkshofa->card->value) == 25) {
             $myHands = Hand::where('user_id', $hand->user_id)->where('index', '>', $hand->index)->get();
             foreach ($myHands as $myHand) {
                 $myHand->index--;
@@ -150,7 +150,7 @@ class GameController extends Controller
             $awlElkomaElmkshofa->index = $lastCardInMyHand->index + 1;
             $awlElkomaElmkshofa->save();
             $hand->game->endTurn();
-            return redirect()->route('home')->with('error', 'ebl3');
+            return redirect()->route('home')->with('error', 'ابلع');
         }
     }
     public function bdel(Hand $hand, Request $request)
@@ -171,5 +171,13 @@ class GameController extends Controller
             }
             $index++;
         }
+    }
+
+    public function screw(Score $score)
+    {
+        $score->screw = true;
+        $score->save();
+        $score->game->endTurn();
+        return redirect()->route('home');
     }
 }

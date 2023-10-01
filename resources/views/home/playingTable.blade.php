@@ -7,6 +7,7 @@
 </div>
 
 @if($game->scores()->count() < 2) <h1>waiting for other players to join {{$game->scores()->count()}} / 2</h1>
+    <meta http-equiv="refresh" content="5">
     @else
     <div class="row text-center mb-1">
         <h4>{{$game->getPlayerInOrder(1,$user)->name}}&nbsp;(&nbsp;{{$game->getPlayerInOrder(1,$user)->score->score}}&nbsp;)</h4>
@@ -27,8 +28,14 @@
 
     </div>
 
-    <div class="row mb-5">
-        <div class="col-2 offset-4">
+    <div class="row mb-5 align-items-center">
+        <div class="col-2 offset-2 text-center">
+            &nbsp;
+            @if($user->score->turn && !$game->hasScrewPlayer())
+            <a href="{{ route('screw', [$user->score->id]) }}" class="btn btn-outline-danger fs-6">سكرو</a>
+            @endif
+        </div>
+        <div class="col-2">
             <div class="card text-center">
                 {{$elkomaElmqlopaCount}} عدد الكروت
                 <img src="{{asset('images/cards/back.png')}}" class="card-img-top img-fluid" alt="...">
@@ -65,4 +72,7 @@
         @endforeach
 
     </div>
+    @endif
+    @if(!$user->score->turn)
+    <meta http-equiv="refresh" content="5">
     @endif
