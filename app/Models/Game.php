@@ -98,7 +98,7 @@ class Game extends Model
         $this->round += 1;
         $this->save();
         $this->funat(1); //كومة مقلوبة
-        return $this->wz3();
+        $this->wz3();
     }
 
     public function getAwlElkomaElmkshofa()
