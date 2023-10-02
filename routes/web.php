@@ -25,8 +25,8 @@ Route::resource('games', 'App\Http\Controllers\GameController');
 Route::post('/games/{game}/join', [App\Http\Controllers\GameController::class, 'join'])->name('join');
 Route::post('/games/{game}/leave', [App\Http\Controllers\GameController::class, 'leave'])->name('leave');
 
-Route::get('/games/{hand}/card', [App\Http\Controllers\GameController::class, 'ekshif'])->name('ekshif');
-Route::get('/games/{hand}/ermy', [App\Http\Controllers\GameController::class, 'ermy'])->name('ermy');
-Route::get('/games/{hand}/bsra', [App\Http\Controllers\GameController::class, 'bsra'])->name('bsra');
-Route::post('/games/{hand}/bdel', [App\Http\Controllers\GameController::class, 'bdel'])->name('bdel');
-Route::get('/games/{score}/screw', [App\Http\Controllers\GameController::class, 'screw'])->name('screw');
+Route::get('/games/{hand}/card', [App\Http\Controllers\HandController::class, 'ekshif'])->name('ekshif');
+Route::get('/games/{hand}/ermy', [App\Http\Controllers\HandController::class, 'ermy'])->name('ermy');
+Route::get('/games/{hand}/bsra', [App\Http\Controllers\HandController::class, 'bsra'])->name('bsra');
+Route::post('/games/{hand}/bdel', [App\Http\Controllers\HandController::class, 'bdel'])->name('bdel');
+Route::get('/games/{participant}/screw', [App\Http\Controllers\HandController::class, 'screw'])->name('screw');

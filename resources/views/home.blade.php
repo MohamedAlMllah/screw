@@ -18,7 +18,7 @@
                     </div>
                     @endif
 
-                    @if($user->score)
+                    @if($user->participant)
                     @include('home.playingTable')
                     @else
                     @include('home.lobby')
