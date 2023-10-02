@@ -13,7 +13,7 @@
                 <h5 class="card-header"><b>{{$game->admin->name}}</b></h5>
                 <div class="card-body">
                     <p class="card-text">Losing Score : {{$game->lose_score}}</p>
-                    <p class="card-text">Number Of Players : {{$game->scores()->count()}} / 2</p>
+                    <p class="card-text">Number Of Players : {{$game->participants()->count()}} / 2</p>
                 </div>
                 <div class="card-footer bg-white d-flex">
                     @if($game->admin_id == $user->id)

@@ -44,14 +44,19 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    public function score()
+    public function participant()
     {
-        return $this->hasOne(Score::class, 'user_id');
+        return $this->hasOne(Participant::class);
+    }
+    public function scores()
+    {
+        return $this->hasMany(Score::class);
     }
     public function hands()
     {
         return $this->hasMany(Hand::class);
     }
+
     public function calculateRoundScores()
     {
         $score = 0;
@@ -63,5 +68,13 @@ class User extends Authenticatable
             }
         }
         return $score;
+    }
+    public function totalScore()
+    {
+        $totalScore = 0;
+        foreach ($this->scores as $score) {
+            $totalScore += $score->value;
+        }
+        return $totalScore;
     }
 }

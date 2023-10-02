@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreign('admin_id')->references('id')->on('users');
             $table->integer('lose_score');
             $table->string('password');
+            $table->integer('round')->default('0');
             $table->integer('cycle')->default('0');
             $table->timestamps();
         });

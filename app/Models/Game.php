@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Foundation\Bootstrap\HandleExceptions;
 
 class Game extends Model
 {
@@ -14,10 +13,11 @@ class Game extends Model
     {
         return $this->belongsTo(User::class, 'admin_id');
     }
-    public function scores()
+    public function participants()
     {
-        return $this->hasMany(Score::class);
+        return $this->hasMany(Participant::class);
     }
+
     public function hands()
     {
         return $this->hasMany(Hand::class);
@@ -70,9 +70,9 @@ class Game extends Model
     }
     public function funat($user_id)
     {
-        $komaMtfunata = Hand::where('user_id', $user_id)->inRandomOrder()->get();
+        $komaMtfunata = Hand::where('game_id', $this->id)->where('user_id', $user_id)->inRandomOrder()->get();
         $cardsIds = $komaMtfunata->pluck('card_id');
-        $koma = Hand::where('user_id', $user_id)->get();
+        $koma = Hand::where('game_id', $this->id)->where('user_id', $user_id)->get();
         $index = 1;
         foreach ($koma as $key => $hand) {
             $hand->card_id = $cardsIds[$key];
@@ -83,10 +83,10 @@ class Game extends Model
     }
     public function wz3()
     {
-        foreach ($this->scores as $score) { // اللاعبين
+        foreach ($this->participants as $participant) { // اللاعبين
             for ($i = 0; $i < 4; $i++) {
                 $hand = Hand::where('game_id', $this->id)->where('user_id', 1)->first();
-                $hand->user_id = $score->user->id;
+                $hand->user_id = $participant->user_id;
                 $hand->index = $i + 1;
                 $hand->save();
             }
@@ -95,6 +95,7 @@ class Game extends Model
     public function startRound()
     {
         $this->cycle = 1; // not used yet
+        $this->round += 1;
         $this->save();
         $this->funat(1); //كومة مقلوبة
         $this->wz3();
@@ -123,64 +124,65 @@ class Game extends Model
 
     public function getPlayerInOrder($order, User $user)
     {
-        $userScore = $this->scores->where('user_id', $user->id)->first();
-        foreach ($this->scores as $key => $score) {
-            if ($userScore->id == $score->id) {
+        $userParticipant = $this->participants->where('user_id', $user->id)->first();
+        foreach ($this->participants as $key => $participant) {
+            if ($userParticipant->id == $participant->id) {
                 $userOrder = $key + 1;
             }
         }
 
-        if ($userOrder + $order > $this->scores->count()) {
-            $order = $userOrder + $order - $this->scores->count();
+        if ($userOrder + $order > $this->participants->count()) {
+            $order = $userOrder + $order - $this->participants->count();
         } else {
             $order = $userOrder + $order;
         }
 
-        foreach ($this->scores as $key => $score) {
+        foreach ($this->participants as $key => $participant) {
             if ($key == $order - 1) {
-                return $score->user;
+                return $participant->user;
             }
         }
     }
     public function endTurn()
     {
-        $currentPlayerTurn = Score::where('game_id', $this->id)->where('turn', true)->first();
-        $currentPlayerTurn->turn = false;
+        $currentPlayerTurn = Participant::where('game_id', $this->id)->where('is_turn', true)->first();
+        $currentPlayerTurn->is_turn = false;
         $currentPlayerTurn->save();
         $nextPlayerTurn = $this->getPlayerInOrder(1, $currentPlayerTurn->user);
-        if ($nextPlayerTurn->score->screw) {
+        if ($nextPlayerTurn->participant->is_screw) {
             $this->endRound();
         } else {
-            $nextPlayerTurn->score->turn = true;
-            $nextPlayerTurn->score->save();
+            $nextPlayerTurn->participant->is_turn = true;
+            $nextPlayerTurn->participant->save();
         }
     }
     public function doubleScrewIfLosser(User $winnerPlayerInThisRound)
     {
-        if (Score::where('game_id', $this->id)->where('screw', true)->first()) {
-            $screwPlayer = Score::where('game_id', $this->id)->where('screw', true)->first()->user;
+        if (Participant::where('game_id', $this->id)->where('is_screw', true)->first()) {
+            $screwPlayer = Participant::where('game_id', $this->id)->where('is_screw', true)->first()->user;
             if ($screwPlayer->id != $winnerPlayerInThisRound->id) {
-                $screwPlayer->score->score += $screwPlayer->calculateRoundScores();
-                $screwPlayer->score->save();
+                $screwPlayerScore = $screwPlayer->scores->where('round', $this->round)->first();
+                $screwPlayerScore->value += $screwPlayer->calculateRoundScores();
+                $screwPlayerScore->save();
             }
         }
     }
 
     public function playerWithLessScore()
     {
-        /* $screwPlayer = Score::where('game_id', $this->id)->where('screw', true)->first();
+        /* $screwPlayer = Score::where('game_id', $this->id)->where('is_screw', true)->first();
         if ($screwPlayer && $screwPlayer->user->calculateRoundScores() == 0) {
             return User::find($screwPlayer->user_id);
         }*/ //not tested 
         $lessScoreInThisRound = 0;
-        foreach ($this->scores as $score) {
-            $playerRoundScore = $score->user->calculateRoundScores();
-            if ($score->id == $this->admin->score->id) {
+        foreach ($this->participants as $participant) {
+            $playerRoundScore = $participant->user->calculateRoundScores();
+            if ($participant->id == $this->admin->participant->id) {
                 $lessScoreInThisRound = $playerRoundScore;
                 $winnerPlayerInThisRound = $this->admin;
-            } elseif ($playerRoundScore < $lessScoreInThisRound || ($playerRoundScore == $lessScoreInThisRound && $score->screw)) {
+            } elseif ($playerRoundScore < $lessScoreInThisRound || ($playerRoundScore == $lessScoreInThisRound && $participant->is_screw)) {
                 $lessScoreInThisRound = $playerRoundScore;
-                $winnerPlayerInThisRound = $score->user;
+                $winnerPlayerInThisRound = $participant->user;
             }
         }
         return User::find($winnerPlayerInThisRound->id);
@@ -190,13 +192,17 @@ class Game extends Model
         // حد خلص كل كروته كمل اللفة واقفل كأنه سكرو
         //خلصنا عدد التفنيطات المتاحة للراوند
 
-        foreach ($this->scores as $score) {
-            $score->score += $score->user->calculateRoundScores();
+        foreach ($this->participants as $participant) {
+            $score = new Score();
+            $score->value = $participant->user->calculateRoundScores();
+            $score->round = $this->round;
+            $score->user_id = $participant->user_id;
             $score->save();
         }
         $winnerPlayerInThisRound = $this->playerWithLessScore();
-        $winnerPlayerInThisRound->score->score -= $winnerPlayerInThisRound->calculateRoundScores();
-        $winnerPlayerInThisRound->score->save();
+        $winnerScore = $winnerPlayerInThisRound->scores->where('round', $this->round)->first();
+        $winnerScore->value -= $winnerPlayerInThisRound->calculateRoundScores();
+        $winnerScore->save();
         $this->doubleScrewIfLosser($winnerPlayerInThisRound);
         $this->ermyAllCards();
         $this->startRound();
@@ -204,7 +210,7 @@ class Game extends Model
     }
     public function hasScrewPlayer()
     {
-        return $this->scores->where('screw', true)->first();
+        return $this->participants->where('is_screw', true)->first();
     }
     public function ermyAllCards()
     {
@@ -213,19 +219,19 @@ class Game extends Model
             $hand->user_id = 1;
             $hand->save();
         }
-        foreach ($this->scores as $score) {
-            $score->screw = false;
-            $score->turn = false;
-            $score->save();
+        foreach ($this->participants as $participant) {
+            $participant->is_screw = false;
+            $participant->is_turn = false;
+            $participant->save();
         }
-        $winner->score->turn = true;
-        $winner->score->save();
+        $winner->participant->is_turn = true;
+        $winner->participant->save();
     }
 
     public function gameIsFinished()
     {
-        foreach ($this->scores as $score) {
-            if ($score->score >= $this->lose_score) {
+        foreach ($this->participants as $participant) {;
+            if ($participant->user->totalScore() >= $this->lose_score) {
                 return true;
             }
         }
