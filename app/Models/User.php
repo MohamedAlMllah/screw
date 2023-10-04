@@ -67,6 +67,9 @@ class User extends Authenticatable
                 $score += $hand->card->value;
             }
         }
+        if ($score < 0) {
+            return 0;
+        }
         return $score;
     }
     public function totalScore()

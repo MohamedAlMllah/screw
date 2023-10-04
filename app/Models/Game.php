@@ -94,7 +94,7 @@ class Game extends Model
     }
     public function startRound()
     {
-        $this->cycle = 1; // not used yet
+        $this->turns = 0;
         $this->round += 1;
         $this->save();
         $this->funat(1); //كومة مقلوبة
@@ -155,6 +155,8 @@ class Game extends Model
             $nextPlayerTurn->participant->is_turn = true;
             $nextPlayerTurn->participant->save();
         }
+        $this->turns++;
+        $this->save();
     }
     public function doubleScrewIfLosser(User $winnerPlayerInThisRound)
     {
@@ -170,17 +172,13 @@ class Game extends Model
 
     public function playerWithLessScore()
     {
-        /* $screwPlayer = Score::where('game_id', $this->id)->where('is_screw', true)->first();
-        if ($screwPlayer && $screwPlayer->user->calculateRoundScores() == 0) {
-            return User::find($screwPlayer->user_id);
-        }*/ //not tested 
         $lessScoreInThisRound = 0;
         foreach ($this->participants as $participant) {
             $playerRoundScore = $participant->user->calculateRoundScores();
             if ($participant->id == $this->admin->participant->id) {
                 $lessScoreInThisRound = $playerRoundScore;
                 $winnerPlayerInThisRound = $this->admin;
-            } elseif ($playerRoundScore < $lessScoreInThisRound || ($playerRoundScore == $lessScoreInThisRound && $participant->is_screw)) {
+            } elseif (($playerRoundScore < $lessScoreInThisRound && $lessScoreInThisRound != 0) || ($playerRoundScore <= $lessScoreInThisRound && $participant->is_screw)) {
                 $lessScoreInThisRound = $playerRoundScore;
                 $winnerPlayerInThisRound = $participant->user;
             }
@@ -189,9 +187,6 @@ class Game extends Model
     }
     public function endRound()
     {
-        // حد خلص كل كروته كمل اللفة واقفل كأنه سكرو
-        //خلصنا عدد التفنيطات المتاحة للراوند
-
         foreach ($this->participants as $participant) {
             $score = new Score();
             $score->value = $participant->user->calculateRoundScores();
@@ -200,13 +195,16 @@ class Game extends Model
             $score->save();
         }
         $winnerPlayerInThisRound = $this->playerWithLessScore();
-        $winnerScore = $winnerPlayerInThisRound->scores->where('round', $this->round)->first();
-        $winnerScore->value -= $winnerPlayerInThisRound->calculateRoundScores();
-        $winnerScore->save();
+        foreach ($this->participants as $participant) {
+            if ($participant->user->calculateRoundScores() == $winnerPlayerInThisRound->calculateRoundScores()) {
+                $score = $participant->user->scores->where('round', $this->round)->first();
+                $score->value -= $winnerPlayerInThisRound->calculateRoundScores();
+                $score->save();
+            }
+        }
         $this->doubleScrewIfLosser($winnerPlayerInThisRound);
         $this->ermyAllCards();
         $this->startRound();
-        return $winnerPlayerInThisRound;
     }
     public function hasScrewPlayer()
     {
@@ -234,6 +232,13 @@ class Game extends Model
             if ($participant->user->totalScore() >= $this->lose_score) {
                 return true;
             }
+        }
+        return false;
+    }
+    public function canScrew(User $user)
+    {
+        if ($user->participant->is_turn && !$this->hasScrewPlayer() && floor($this->turns / $this->participants->count() + 1 >= 3)) {
+            return true;
         }
         return false;
     }

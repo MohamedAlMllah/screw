@@ -31,7 +31,7 @@
     <div class="row mb-5 align-items-center">
         <div class="col-2 offset-2 text-center">
             &nbsp;
-            @if($user->participant->is_turn && !$game->hasScrewPlayer())
+            @if($game->canScrew($user))
             <a href="{{ route('screw', [$user->participant->id]) }}" class="btn btn-outline-danger fs-6">سكرو</a>
             @endif
         </div>

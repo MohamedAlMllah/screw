@@ -18,7 +18,7 @@ return new class extends Migration
             $table->integer('lose_score');
             $table->string('password');
             $table->integer('round')->default('0');
-            $table->integer('cycle')->default('0');
+            $table->integer('turns')->default('0');
             $table->timestamps();
         });
     }
