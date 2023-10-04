@@ -33,6 +33,10 @@ class HandController extends Controller
                 $myHand->index--;
                 $myHand->save();
             }
+            if ($hand->user->hands->count() == 1) {
+                $hand->user->participant->is_screw = true;
+                $hand->user->participant->save();
+            }
             return redirect()->route('ermy', $hand->id);
         } else {
             $lastCardInMyHand = Auth::user()->hands->sortByDesc('index')->first();
