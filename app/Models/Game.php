@@ -94,8 +94,8 @@ class Game extends Model
     }
     public function startRound()
     {
+        $this->round++;
         $this->turns = 0;
-        $this->round += 1;
         $this->save();
         $this->funat(1); //كومة مقلوبة
         $this->wz3();
@@ -154,9 +154,9 @@ class Game extends Model
         } else {
             $nextPlayerTurn->participant->is_turn = true;
             $nextPlayerTurn->participant->save();
+            $this->turns++;
+            $this->save();
         }
-        $this->turns++;
-        $this->save();
     }
     public function doubleScrewIfLosser(User $winnerPlayerInThisRound)
     {
@@ -220,6 +220,7 @@ class Game extends Model
         foreach ($this->participants as $participant) {
             $participant->is_screw = false;
             $participant->is_turn = false;
+            $participant->skill = 'showTwoCards';
             $participant->save();
         }
         $winner->participant->is_turn = true;

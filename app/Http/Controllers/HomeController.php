@@ -37,11 +37,13 @@ class HomeController extends Controller
             $awlElkomaElmkshofa = $participant->game->getAwlElkomaElmkshofa();
             $awlElkomaElmqlopa = $participant->game->getAwlElkomaElmqlopa();
             $elkomaElmkshofaCount = Hand::where('game_id', $participant->game->id)->where('user_id', 2)->count();
+            $skill = $participant->skill;
         }
         return view('home', [
             'games' => Game::all(),
             'user' => Auth::user(),
             'game' => $participant->game ?? null,
+            'skill' => $skill ?? 'normal',
             'awlElkomaElmkshofa' => $awlElkomaElmkshofa ?? null,
             'awlElkomaElmqlopa' => $awlElkomaElmqlopa ?? null,
             'elkomaElmkshofaCount' => $elkomaElmkshofaCount ?? null,

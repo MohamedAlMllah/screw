@@ -33,5 +33,4 @@
 @include('layouts.modals.delete')
 @include('layouts.modals.join')
 @include('layouts.modals.leave')
-@include('layouts.modals.bdel')
 @endsection

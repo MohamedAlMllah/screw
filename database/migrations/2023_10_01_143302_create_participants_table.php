@@ -19,6 +19,7 @@ return new class extends Migration
             $table->foreign('user_id')->references('id')->on('users');
             $table->boolean('is_turn')->default('0');
             $table->boolean('is_screw')->default('0');
+            $table->string('skill')->default('showTwoCards');
             $table->timestamps();
         });
     }
