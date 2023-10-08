@@ -17,4 +17,13 @@ class Participant extends Model
         return $this->belongsTo(Game::class);
     }
     protected $hidden = ['user'];
+
+    public function endSkill()
+    {
+        if ($this->skill != 'showTwoCards') {
+            $this->game->endTurn();
+        }
+        $this->skill = 'normal';
+        $this->save();
+    }
 }
