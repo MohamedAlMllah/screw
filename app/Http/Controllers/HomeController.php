@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Game;
 use App\Models\Hand;
-use App\Models\Score;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
@@ -31,7 +29,7 @@ class HomeController extends Controller
         $participant = Auth::user()->participant;
         if ($participant && $participant->game->participants->count() == 2) {
             if ($participant->game->gameIsFinished()) {
-                return 'the game summary here';
+                return redirect()->route('summary', $participant->game->id);
             }
             $elkomaElmqlopaCount = Hand::where('game_id', $participant->game->id)->where('user_id', 1)->count();
             $awlElkomaElmkshofa = $participant->game->getAwlElkomaElmkshofa();

@@ -13,43 +13,37 @@ class HandController extends Controller
         if ($hand->user->participant && $hand->user->participant->skill == 'showTwoCards') {
             $hand1 = $hand->user->hands->where('index', 1)->first();
             $hand2 = $hand->user->hands->where('index', 2)->first();
-            $skill = $hand->user->participant->skill;
-        } elseif ($hand->user->participant && $hand->user->participant->skill == 'bossFeWrqtak') {
-            $skill = $hand->user->participant->skill;
-        } elseif (Auth::user()->participant && Auth::user()->participant->skill == 'bossFeWrqtGherak') {
-            $skill = Auth::user()->participant->skill;
         }
         return View('cards.kshf', [
             'hand' => $hand,
             'hand1' => $hand1 ?? null,
             'hand2' => $hand2 ?? null,
-            'skill' => $skill ?? 'normal',
+            'skill' => Auth::user()->participant->skill,
             'user' => Auth::user()
         ]);
     }
     public function ermy(Hand $hand)
     {
-        $cardId = $hand->card_id;
         $userId = $hand->user_id;
         $hand->user_id = 2;
         $hand->index = $hand->game->getAwlElkomaElmkshofa()->index + 1;
         $hand->save();
         $participant = Participant::where('user_id', Auth::user()->id)->first();
-        if ($userId == 1 && $cardId >= 9 && $cardId <= 10) {
+        if ($userId == 1 && $hand->card_id >= 9 && $hand->card_id <= 10) {
             $participant->skill = 'bossFeWrqtak';
-            $participant->save();
-        } elseif ($userId == 1 && $cardId >= 11 && $cardId <= 12) {
+        } elseif ($userId == 1 && $hand->card_id >= 11 && $hand->card_id <= 12) {
             $participant->skill = 'bossFeWrqtGherak';
-            $participant->save();
-        } elseif ($userId == 1 && $cardId == 13) { //bsra
+        } elseif ($userId == 1 && $hand->card_id == 13) { //bsra
             $participant->skill = 'bsra';
-            $participant->save();
-        } elseif ($userId == 1 && $cardId == 15) { //hat w5od
+        } elseif ($userId == 1 && $hand->card_id == 14) { //k3b dayer
+            $participant->skill = 'kaabDayer';
+            $participant->kaab_dayer = $participant->game->participants->where('user_id', '!=', $participant->user_id)->pluck('user_id');
+        } elseif ($userId == 1 && $hand->card_id == 15) { //5od what
             $participant->skill = 'KhodWHat';
-            $participant->save();
         } else {
             Auth::user()->participant->endSkill();
         }
+        $participant->save();
         return redirect()->route('home');
     }
     public function bsra(Hand $hand)
@@ -94,10 +88,12 @@ class HandController extends Controller
             $hand->user_id = Auth::user()->id;
             $hand->save();
             return redirect()->route('ermy', $hand->id);
-        } elseif (Auth::user()->participant->skill == 'KhodWHat') {
-            Auth::user()->participant->endSkill();
         }
-        $hand->game->endTurn();
+        if (Auth::user()->participant->skill == 'KhodWHat') {
+            Auth::user()->participant->endSkill();
+        } else {
+            $hand->game->endTurn();
+        }
         return redirect()->route('home');
     }
 
@@ -108,9 +104,18 @@ class HandController extends Controller
         $participant->game->endTurn();
         return redirect()->route('home');
     }
-    public function endSkill(Participant $participant) //useless
+    public function endSkill(hand $hand)
     {
-        $participant->endSkill();
+        $kaabDayer = json_decode(Auth::user()->participant->kaab_dayer, true);
+        if (count($kaabDayer) > 0) {
+            Auth::user()->participant->kaab_dayer = array_diff($kaabDayer, array($hand->user_id));
+            Auth::user()->participant->save();
+            if (count($kaabDayer) == 1) {
+                Auth::user()->participant->endSkill();
+            }
+        } else {
+            Auth::user()->participant->endSkill();
+        }
         return redirect()->route('home');
     }
 }

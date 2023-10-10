@@ -24,10 +24,10 @@
                     </div>
                     <div class="row mt-3">
                         <div class="col text-center">
-                            <a href="{{ route('endSkill', [$user->participant->id]) }}" class="btn btn-outline-success fs-4 col-4">تمام</a>
+                            <a href="{{ route('endSkill', [$hand->id]) }}" class="btn btn-outline-success fs-4 col-4">تمام</a>
                         </div>
                     </div>
-                    @elseif($skill == 'bossFeWrqtak' || $skill == 'bossFeWrqtGherak')
+                    @elseif($skill == 'bossFeWrqtak' || $skill == 'bossFeWrqtGherak' || $skill == 'kaabDayer')
                     <div class="col-4 offset-4">
                         <div class="card text-center">
                             {{$hand->index}}
@@ -36,11 +36,11 @@
                     </div>
                     <div class="row mt-3">
                         <div class="col text-center">
-                            <a href="{{ route('endSkill', [$user->participant->id]) }}" class="btn btn-outline-success fs-4 col-4">تمام</a>
+                            <a href="{{ route('endSkill', [$hand->id]) }}" class="btn btn-outline-success fs-4 col-4">تمام</a>
                         </div>
                     </div>
                     @else
-                    <div class="col-4 offset-4">
+                    <div class="col-6 offset-3">
                         <div class="card">
                             <img src="{{asset($hand->card->image)}}" class="card-img-top img-fluid" alt="...">
                             <div class="card-body text-center">

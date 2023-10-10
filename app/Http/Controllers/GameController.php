@@ -120,4 +120,23 @@ class GameController extends Controller
 
         return redirect()->route('home');
     }
+
+    public function summary(Game $game)
+    {
+        $scores = [];
+        $totalScores = [];
+        $playersNames = [];
+        foreach ($game->participants as $participant) {
+            array_push($scores, $participant->user->scores);
+            array_push($totalScores, $participant->user->totalScore());
+            array_push($playersNames, $participant->user->name);
+        }
+        return View('games.summary', [
+            'scores' => $scores,
+            'totalScores' => $totalScores,
+            'playersNames' => $playersNames,
+            'numberOfPlayers' => $game->participants->count(),
+            'numberOfRounds' => $game->scores->max('round')
+        ]);
+    }
 }
