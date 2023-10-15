@@ -17,10 +17,13 @@ class Game extends Model
     {
         return $this->hasMany(Participant::class);
     }
-
     public function hands()
     {
         return $this->hasMany(Hand::class);
+    }
+    public function scores()
+    {
+        return $this->hasMany(Score::class);
     }
 
     public function setHand(Card $card, $user_id)
@@ -192,6 +195,7 @@ class Game extends Model
             $score->value = $participant->user->calculateRoundScores();
             $score->round = $this->round;
             $score->user_id = $participant->user_id;
+            $score->game_id = $this->id;
             $score->save();
         }
         $winnerPlayerInThisRound = $this->playerWithLessScore();
@@ -206,9 +210,13 @@ class Game extends Model
         $this->ermyAllCards();
         $this->startRound();
     }
-    public function hasScrewPlayer()
+    public function screwPlayer()
     {
-        return $this->participants->where('is_screw', true)->first();
+        $participant = $this->participants->where('is_screw', true)->first();
+        if ($participant) {
+            return $participant->user;
+        }
+        return null;
     }
     public function ermyAllCards()
     {
@@ -238,7 +246,7 @@ class Game extends Model
     }
     public function canScrew(User $user)
     {
-        if ($user->participant->is_turn && !$this->hasScrewPlayer() && floor($this->turns / $this->participants->count() + 1 >= 3)) {
+        if ($user->participant->is_turn && !$this->screwPlayer() && floor($this->turns / $this->participants->count() + 1 >= 3)) {
             return true;
         }
         return false;

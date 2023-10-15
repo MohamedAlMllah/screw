@@ -20,6 +20,7 @@ return new class extends Migration
             $table->boolean('is_turn')->default('0');
             $table->boolean('is_screw')->default('0');
             $table->string('skill')->default('showTwoCards');
+            $table->json('kaab_dayer')->default('[]');
             $table->timestamps();
         });
     }
