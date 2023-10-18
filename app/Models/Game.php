@@ -95,8 +95,16 @@ class Game extends Model
             }
         }
     }
-    public function startRound()
+    public function startRound(User $user)
     {
+        foreach ($this->participants as $participant) {
+            $participant->is_screw = false;
+            $participant->is_turn = false;
+            $participant->skill = 'showTwoCards';
+            $participant->save();
+        }
+        $user->participant->is_turn = true;
+        $user->participant->save();
         $this->round++;
         $this->turns = 0;
         $this->save();
@@ -145,6 +153,7 @@ class Game extends Model
                 return $participant->user;
             }
         }
+        return null;
     }
     public function endTurn()
     {
@@ -208,7 +217,7 @@ class Game extends Model
         }
         $this->doubleScrewIfLosser($winnerPlayerInThisRound);
         $this->ermyAllCards();
-        $this->startRound();
+        $this->startRound($this->playerWithLessScore());
     }
     public function screwPlayer()
     {
@@ -220,19 +229,10 @@ class Game extends Model
     }
     public function ermyAllCards()
     {
-        $winner = $this->playerWithLessScore();
         foreach ($this->hands as $hand) {
             $hand->user_id = 1;
             $hand->save();
         }
-        foreach ($this->participants as $participant) {
-            $participant->is_screw = false;
-            $participant->is_turn = false;
-            $participant->skill = 'showTwoCards';
-            $participant->save();
-        }
-        $winner->participant->is_turn = true;
-        $winner->participant->save();
     }
 
     public function gameIsFinished()
