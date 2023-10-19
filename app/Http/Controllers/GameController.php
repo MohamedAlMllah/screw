@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Game;
+use App\Models\Hand;
 use App\Models\Participant;
+use App\Models\Score;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -113,14 +115,9 @@ class GameController extends Controller
             $game->admin_id = $game->getPlayerInOrder(1, Auth::user())->id;
             $game->save();
         }
-
         $participant = Participant::where('user_id', Auth::user()->id);
-        foreach ($game->scores as $score) {
-            $score->delete();
-        }
-        foreach ($game->hands as $hand) {
-            $hand->delete();
-        }
+        Score::where('game_id', $game->id)->delete();
+        Hand::where('game_id', $game->id)->delete();
         $participant->delete();
 
         return redirect()->route('home');
