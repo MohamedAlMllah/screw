@@ -41,6 +41,7 @@ class GameController extends Controller
         $game->admin_id = Auth::user()->id;
         $game->lose_score = $request->score;
         $game->password = $request->password;
+        $game->number_of_players = $request->numberOfPlayers;
         $game->save();
 
         $score = new Participant();
@@ -48,8 +49,6 @@ class GameController extends Controller
         $score->game_id = $game->id;
         $score->is_turn = true;
         $score->save();
-
-        $game->intialize();
 
         return redirect()->route('home');
     }
@@ -93,7 +92,7 @@ class GameController extends Controller
             return redirect()->route('home')->with('error', 'wrong password');
         if (Auth::user()->participant)
             return redirect()->route('home')->with('error', 'You are already in game');
-        if ($game->participants->count() == 2)
+        if ($game->participants->count() == $game->number_of_players)
             return redirect()->route('home')->with('error', 'This game is full');
 
         $participant = new Participant();
@@ -101,22 +100,25 @@ class GameController extends Controller
         $participant->game_id = $game->id;
         $participant->save();
         $game = Game::where('id', $game->id)->first();
-        if ($game->participants->count() == 2) {
-            $game->startRound();
+        if ($game->participants->count() == $game->number_of_players) {
+            $game->intialize();
+            $game->startRound($game->admin);
         }
         return redirect()->route('home');
     }
     public function leave(Game $game)
     {
-        if (Auth::user()->score->game != $game)
+        if (Auth::user()->participant && Auth::user()->participant->game != $game) {
             return redirect()->route('home')->with('error', 'You are not playing this game');
-
-        $score = Score::where('user_id', Auth::user()->id);
-        $score->delete();
-        $scores = Score::where('game_id', $game->id);
-        foreach ($scores as $score) {
-            $score->score = 0;
         }
+        if ($game->participants->count() > 1 && Auth::user()->id == $game->admin_id) {
+            $game->admin_id = $game->getPlayerInOrder(1, Auth::user())->id;
+            $game->save();
+        }
+        $participant = Participant::where('user_id', Auth::user()->id);
+        Score::where('game_id', $game->id)->delete();
+        Hand::where('game_id', $game->id)->delete();
+        $participant->delete();
 
         return redirect()->route('home');
     }
