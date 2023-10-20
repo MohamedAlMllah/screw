@@ -1,4 +1,5 @@
 <div class="row mb-5 align-items-top gx-2 gx-lg-3">
+    @if($numberOfPlayers>2)
     <div class="col-3">
         <div class="row text-center mb-1">
             <h4>{{$game->getPlayerInOrder($numberOfPlayers-1,$user)->name}}&nbsp;(&nbsp;{{$game->getPlayerInOrder($numberOfPlayers-1,$user)->totalScore()}}&nbsp;)</h4>
@@ -25,6 +26,9 @@
         </div>
         @endforeach
     </div>
+    @else
+    <div class="col-3">&nbsp;</div>
+    @endif
     <div class="col-2 align-self-center">
         <div class="text-center">
             {{$elkomaElmqlopaCount}} </br> كارت
@@ -58,6 +62,7 @@
             @endif
         </div>
     </div>
+    @if($numberOfPlayers>2)
     <div class="col-3 align-self-top">
         <div class="row text-center mb-1">
             <h4>{{$game->getPlayerInOrder(1,$user)->name}}&nbsp;(&nbsp;{{$game->getPlayerInOrder(1,$user)->totalScore()}}&nbsp;)</h4>
@@ -84,4 +89,7 @@
         </div>
         @endforeach
     </div>
+    @else
+    <div class="col-3">&nbsp;</div>
+    @endif
 </div>
