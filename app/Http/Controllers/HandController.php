@@ -37,7 +37,7 @@ class HandController extends Controller
             $participant->skill = 'bsra';
         } elseif ($userId == 1 && $hand->card_id == 14) { //k3b dayer
             $participant->skill = 'kaabDayer';
-            $participant->kaab_dayer = $participant->game->participants->where('user_id', '!=', $participant->user_id)->pluck('user_id');
+            $participant->kaab_dayer = $participant->game->participants->pluck('user_id');
         } elseif ($userId == 1 && $hand->card_id == 15) { //5od what
             $participant->skill = 'KhodWHat';
         } else {
