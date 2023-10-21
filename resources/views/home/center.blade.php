@@ -1,7 +1,34 @@
 <div class="row mb-5 align-items-top gx-2 gx-lg-3">
     @if($numberOfPlayers>2)
     <div class="col-3">
+        @if($numberOfPlayers>4)
         <div class="row text-center mb-1">
+            <h4>{{$game->getPlayerInOrder($numberOfPlayers-2,$user)->name}}&nbsp;(&nbsp;{{$game->getPlayerInOrder($numberOfPlayers-2,$user)->totalScore()}}&nbsp;)</h4>
+        </div>
+        @foreach($game->getPlayerInOrder($numberOfPlayers-2,$user)->hands->sortBy('index') as $hand)
+        <div class="row gx-0 align-items-top text-center">
+            <div class="col-1">
+                {{$hand->index}}
+            </div>
+            <div class="col-8">
+                @if($game->getPlayerInOrder($numberOfPlayers-2,$user)->hands->count() == $hand->index)
+                <img src="{{asset('images/cards/backHorizontal.png')}}" class="card-img-top img-fluid rounded-0" alt="...">
+                @else
+                <img src="{{asset('images/cards/backHalfHorizontal.png')}}" class="card-img-top img-fluid rounded-0" alt="...">
+                @endif
+            </div>
+            <div class="col-3">
+                @if($user->participant->is_turn && ($skill == 'bossFeWrqtGherak' || ($skill == 'kaabDayer' && in_array($game->getPlayerInOrder($numberOfPlayers-2,$user)->id, json_decode($user->participant->kaab_dayer, true)))))
+                <a href="{{ route('ekshif', [$hand->id]) }}" class="btn btn-outline-primary border-0" style="padding: 0;">&nbsp;اكشف&nbsp;</a>
+                @elseif($user->participant->is_turn && $skill == 'KhodWHat')
+                <a href="{{ route('bdel', [$hand->id]) }}" type="button" class="btn btn-outline-success border-0" style="padding: 0;">&nbsp;بـــدل&nbsp;</a>
+                @endif
+            </div>
+        </div>
+        @endforeach
+        @endif
+
+        <div class="row text-center mt-5 mb-1">
             <h4>{{$game->getPlayerInOrder($numberOfPlayers-1,$user)->name}}&nbsp;(&nbsp;{{$game->getPlayerInOrder($numberOfPlayers-1,$user)->totalScore()}}&nbsp;)</h4>
         </div>
         @foreach($game->getPlayerInOrder($numberOfPlayers-1,$user)->hands->sortBy('index') as $hand)
@@ -64,7 +91,34 @@
     </div>
     @if($numberOfPlayers>2)
     <div class="col-3 align-self-top">
+        @if($numberOfPlayers>4)
         <div class="row text-center mb-1">
+            <h4>{{$game->getPlayerInOrder(2,$user)->name}}&nbsp;(&nbsp;{{$game->getPlayerInOrder(2,$user)->totalScore()}}&nbsp;)</h4>
+        </div>
+        @foreach($game->getPlayerInOrder(2,$user)->hands->sortBy('index') as $hand)
+        <div class="row gx-0 text-center">
+            <div class="col-3">
+                @if($user->participant->is_turn && ($skill == 'bossFeWrqtGherak' || ($skill == 'kaabDayer' && in_array($game->getPlayerInOrder(2,$user)->id, json_decode($user->participant->kaab_dayer, true)))))
+                <a href="{{ route('ekshif', [$hand->id]) }}" class="btn btn-outline-primary border-0" style="padding: 0;">&nbsp;اكشف&nbsp;</a>&nbsp;
+                @elseif($user->participant->is_turn && $skill == 'KhodWHat')
+                <a href="{{ route('bdel', [$hand->id]) }}" class="btn btn-outline-success border-0" style="padding: 0;">&nbsp;بـــدل&nbsp;</a>&nbsp;
+                @endif
+            </div>
+            <div class="col-8">
+                @if($game->getPlayerInOrder(2,$user)->hands->count() == $hand->index)
+                <img src="{{asset('images/cards/backHorizontal.png')}}" class="card-img-top img-fluid rounded-0" alt="...">
+                @else
+                <img src="{{asset('images/cards/backHalfHorizontal.png')}}" class="card-img-top img-fluid rounded-0" alt="...">
+                @endif
+            </div>
+            <div class="col-1">
+                {{$hand->index}}
+            </div>
+        </div>
+        @endforeach
+        @endif
+
+        <div class="row text-center mt-2 mb-1">
             <h4>{{$game->getPlayerInOrder(1,$user)->name}}&nbsp;(&nbsp;{{$game->getPlayerInOrder(1,$user)->totalScore()}}&nbsp;)</h4>
         </div>
         @foreach($game->getPlayerInOrder(1,$user)->hands->sortBy('index') as $hand)
