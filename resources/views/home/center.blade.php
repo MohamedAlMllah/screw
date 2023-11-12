@@ -28,7 +28,7 @@
         @endforeach
         @endif
 
-        <div class="row text-center mt-5 mb-1">
+        <div class="row text-center mt-2 mb-1">
             <h4>{{$game->getPlayerInOrder($numberOfPlayers-1,$user)->name}}&nbsp;(&nbsp;{{$game->getPlayerInOrder($numberOfPlayers-1,$user)->totalScore()}}&nbsp;)</h4>
         </div>
         @foreach($game->getPlayerInOrder($numberOfPlayers-1,$user)->hands->sortBy('index') as $hand)
@@ -60,7 +60,7 @@
         <div class="text-center">
             {{$elkomaElmqlopaCount}} </br> كارت
             <img src="{{asset('images/cards/back.png')}}" class="card-img-top img-fluid" alt="...">
-            @if($user->participant->is_turn && $skill == 'normal')
+            @if($user->participant->is_turn && $skill == 'normal' && !$playersNotViewedTwoCards->count())
             <a href="{{ route('ekshif', [$game->getAwlElkomaElmqlopa()->id]) }}" class="btn btn-outline-primary mt-1">اكشف</a>
             @endif
         </div>
@@ -72,10 +72,10 @@
         @endif
         @if($game->screwPlayer())
         <div class="alert alert-danger" role="alert">
-            {{$game->screwPlayer()->name}} سكرو
+            {{$game->screwPlayer()->name}} screw
         </div>
         @endif
-        @if($skill=='showTwoCards' && floor($game->turns / $game->participants->count()) == 0 && $user->participant->is_turn)
+        @if($skill=='showTwoCards' && floor($game->turns / $game->participants->count()) == 0)
         <a href="{{ route('ekshif', [$user->hands->first()->id]) }}" class="btn btn-outline-primary">اكشف كارتين</a>
         @endif
         &nbsp;
@@ -84,7 +84,7 @@
         <div class="text-center">
             {{$elkomaElmkshofaCount}} </br> كارت
             <img src="{{asset($awlElkomaElmkshofa->card->image)}}" class="card-img-top img-fluid" alt="...">
-            @if($user->participant->is_turn && $skill == 'normal')
+            @if($user->participant->is_turn && $skill == 'normal' && !$playersNotViewedTwoCards->count())
             <a href="{{ route('bdel', [$awlElkomaElmkshofa->id]) }}" class="btn btn-outline-success mt-1">بـــدل</a>
             @endif
         </div>

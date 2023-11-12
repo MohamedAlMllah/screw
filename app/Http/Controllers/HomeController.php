@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Announcement;
 use App\Models\Game;
 use App\Models\Hand;
+use App\Models\Participant;
 use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
@@ -25,7 +27,6 @@ class HomeController extends Controller
      */
     public function index()
     {
-
         $participant = Auth::user()->participant;
         if ($participant && $participant->game->participants->count() == $participant->game->number_of_players) {
             if ($participant->game->gameIsFinished()) {
@@ -37,13 +38,17 @@ class HomeController extends Controller
             $elkomaElmkshofaCount = Hand::where('game_id', $participant->game->id)->where('user_id', 2)->count();
             $skill = $participant->skill;
             $numberOfPlayers = $participant->game->participants->count();
+            $announcements = Announcement::orderBy('id', 'DESC')->take($numberOfPlayers)->get();
+            $playersNotViewedTwoCards = Participant::where('game_id', $participant->game->id)->where('skill', 'showTwoCards')->get();
         }
         return view('home', [
             'games' => Game::all(),
             'user' => Auth::user(),
             'game' => $participant->game ?? null,
             'numberOfPlayers' => $numberOfPlayers ?? 0,
+            'playersNotViewedTwoCards' => $playersNotViewedTwoCards ?? null,
             'skill' => $skill ?? 'normal',
+            'announcements' => $announcements ?? null,
             'awlElkomaElmkshofa' => $awlElkomaElmkshofa ?? null,
             'awlElkomaElmqlopa' => $awlElkomaElmqlopa ?? null,
             'elkomaElmkshofaCount' => $elkomaElmkshofaCount ?? null,

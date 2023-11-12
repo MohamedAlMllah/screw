@@ -15,6 +15,6 @@
     @include('home.bottom')
 
     @endif
-    @if(!$user->participant->is_turn)
+    @if(!$user->participant->is_turn || $playersNotViewedTwoCards->count())
     <meta http-equiv="refresh" content="5">
     @endif
