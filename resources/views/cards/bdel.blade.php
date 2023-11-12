@@ -13,7 +13,7 @@
                         <div class="col-2">
                             <div class="card text-center">
                                 {{$hand->index}}
-                                <a href="{{ route('bdelWith', [$bdelWithHand->id, $hand->index]) }}">
+                                <a href="{{ route('bdelWith', [$bdelWithHand->id, $hand->id]) }}">
                                     <img src="{{asset('images/cards/back.png')}}" class="card-img-top img-fluid" alt="...">
                                 </a>
                             </div>

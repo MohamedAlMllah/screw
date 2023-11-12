@@ -31,7 +31,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/games/{hand}/ermy', [App\Http\Controllers\HandController::class, 'ermy'])->name('ermy');
     Route::get('/games/{hand}/bsra', [App\Http\Controllers\HandController::class, 'bsra'])->name('bsra');
     Route::get('/games/{hand}/bdel', [App\Http\Controllers\HandController::class, 'bdel'])->name('bdel');
-    Route::get('/games/{hand}/bdel-with/{index}', [App\Http\Controllers\HandController::class, 'bdelWith'])->name('bdelWith');
+    Route::get('/games/{hand}/bdel-with/{myHand}', [App\Http\Controllers\HandController::class, 'bdelWith'])->name('bdelWith');
     Route::get('/games/{participant}/screw', [App\Http\Controllers\HandController::class, 'screw'])->name('screw');
     Route::get('/games/{hand}/end-skill', [App\Http\Controllers\HandController::class, 'endSkill'])->name('endSkill');
 });

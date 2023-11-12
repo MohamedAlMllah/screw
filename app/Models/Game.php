@@ -110,6 +110,7 @@ class Game extends Model
         $this->save();
         $this->funat(1); //كومة مقلوبة
         $this->wz3();
+        Announcement::where('game_id', $this->id)->delete();
     }
 
     public function getAwlElkomaElmkshofa()
@@ -246,7 +247,7 @@ class Game extends Model
     }
     public function canScrew(User $user)
     {
-        if ($user->participant->is_turn && !$this->screwPlayer() && floor($this->turns / $this->participants->count() + 1 >= 3)) {
+        if ($user->participant->is_turn && !$this->screwPlayer() && floor($this->turns  / $this->participants->count())+1 > 3) {
             return true;
         }
         return false;
