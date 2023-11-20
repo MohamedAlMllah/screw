@@ -67,12 +67,16 @@
     </div>
     <div class="col-2 text-center align-self-center">
         &nbsp;
-        @if($game->canScrew($user))
+        @if($game->canScrew($user) && $skill == 'normal')
         <a href="{{ route('screw', [$user->participant->id]) }}" class="btn btn-outline-danger fs-6">سكرو</a>
         @endif
         @if($game->screwPlayer())
         <div class="alert alert-danger" role="alert">
+            @if($game->screwPlayer()->participant->is_screw == 1)
             {{$game->screwPlayer()->name}} screw
+            @else
+            {{$game->screwPlayer()->name}} finished cards
+            @endif
         </div>
         @endif
         @if($skill=='showTwoCards' && floor($game->turns / $game->participants->count()) == 0)

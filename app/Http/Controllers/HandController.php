@@ -11,7 +11,15 @@ class HandController extends Controller
 {
     public function ekshif(Hand $hand)
     {
-        $participant = $hand->user->participant;
+        $participant = Auth::user()->participant;
+        $skill = $participant->skill;
+        if ($participant->skill == 'normal' && $hand->user_id != 1) {
+            return redirect()->route('home')->with('error', "Don't Cheat");
+        }
+        if ($hand->user_id == 1) {
+            $participant->skill = 'kshfElkoma';
+            $participant->save();
+        }
         if ($participant && $participant->skill == 'showTwoCards') {
             $hand1 = $hand->user->hands->where('index', 1)->first();
             $hand2 = $hand->user->hands->where('index', 2)->first();
@@ -23,13 +31,13 @@ class HandController extends Controller
                 $announcement->text .= ' w kshaf cart <p style="display:inline" class="text-success"><b>' . $hand->user->name . '</b></p> trtibo <u>' . $hand->index . '</u>';
             }
             $announcement->save();
+            $participant->endSkill();
         }
-
         return View('cards.kshf', [
             'hand' => $hand,
             'hand1' => $hand1 ?? null,
             'hand2' => $hand2 ?? null,
-            'skill' => Auth::user()->participant->skill,
+            'skill' => $skill,
             'user' => Auth::user()
         ]);
     }
@@ -66,6 +74,7 @@ class HandController extends Controller
         if ($participant->skill == 'bsra' && $userId == Auth::user()->id) {
             $announcement = Announcement::orderBy('id', 'DESC')->first();
             $announcement->text .= ' b3den rma cart <p style="display:inline" class="text-primary">' . $hand->card->name . '</p> trtibo <u>' . $index . '</u>';
+            $announcement->save();
             Auth::user()->participant->endSkill();
         } elseif ($userId == Auth::user()->id) {
             if ($awlElkomaElmkshofa == $hand->card->name) {
@@ -86,9 +95,10 @@ class HandController extends Controller
     }
     public function bsra(Hand $hand)
     {
-        if ($hand->user->participant->skill != 'bsra') {
+        $participant = Auth::user()->participant;
+        if ($participant->skill == 'kshfElkoma') {
+            return redirect()->route('ekshif', $participant->game->getAwlElkomaElmqlopa()->id)->with('error', "Don't Cheat");
         }
-
         $awlElkomaElmkshofa = $hand->game->getAwlElkomaElmkshofa();
         if ($hand->card->id == $awlElkomaElmkshofa->card->id || abs($hand->card->value - $awlElkomaElmkshofa->card->value) == 25 || $hand->user->participant->skill == 'bsra') {
 
@@ -98,7 +108,7 @@ class HandController extends Controller
                 $myHand->save();
             }
             if ($hand->user->hands->count() == 1) {
-                $hand->user->participant->is_screw = true;
+                $hand->user->participant->is_screw = 2;
                 $hand->user->participant->save();
             }
             return redirect()->route('ermy', $hand->id);
@@ -119,6 +129,10 @@ class HandController extends Controller
     }
     public function bdel(Hand $hand)
     {
+        $participant = Auth::user()->participant;
+        if ($participant->skill == 'kshfElkoma') {
+            return redirect()->route('ekshif', $participant->game->getAwlElkomaElmqlopa()->id)->with('error', "Don't Cheat");
+        }
         return View('cards.bdel', [
             'bdelWithHand' => $hand,
             'user' => Auth::user()
@@ -155,7 +169,7 @@ class HandController extends Controller
 
     public function screw(Participant $participant)
     {
-        $participant->is_screw = true;
+        $participant->is_screw = 1;
         $participant->save();
         $announcement = new Announcement();
         $announcement->game_id = $participant->game_id;

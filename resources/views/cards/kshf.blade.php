@@ -7,6 +7,11 @@
             <div class="card">
 
                 <div class="card-body">
+                    @if (session('error'))
+                    <div class="alert alert-danger" role="alert">
+                        {{ session('error') }}
+                    </div>
+                    @endif
                     @if($skill == 'showTwoCards')
                     <div class="row">
                         <div class="col-4 offset-2">
@@ -40,7 +45,7 @@
                         </div>
                     </div>
                     @else
-                    <div class="col-6 offset-3">
+                    <div class="col-4 offset-4">
                         <div class="card">
                             <img src="{{asset($hand->card->image)}}" class="card-img-top img-fluid" alt="...">
                             <div class="card-body text-center">

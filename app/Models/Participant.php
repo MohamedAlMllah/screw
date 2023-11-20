@@ -20,10 +20,11 @@ class Participant extends Model
 
     public function endSkill()
     {
-        if ($this->skill != 'showTwoCards') {
-            $this->game->endTurn();
-        }
+        $skill = $this->skill;
         $this->skill = 'normal';
         $this->save();
+        if ($skill != 'showTwoCards') {
+            $this->game->endTurn();
+        }
     }
 }
