@@ -18,7 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users');
             $table->boolean('is_turn')->default('0');
-            $table->boolean('is_screw')->default('0');
+            $table->integer('is_screw')->default('0');
             $table->string('skill')->default('showTwoCards');
             $table->json('kaab_dayer')->default('[]');
             $table->timestamps();
