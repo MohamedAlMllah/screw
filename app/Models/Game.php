@@ -160,7 +160,6 @@ class Game extends Model
     public function endTurn()
     {
         $currentPlayerTurn = Auth::user()->participant;
-        //$currentPlayerTurn = Participant::where('game_id', $this->id)->where('is_turn', true)->first();
         $currentPlayerTurn->is_turn = false;
         $currentPlayerTurn->save();
         $nextPlayerTurn = $this->getPlayerInOrder(1, $currentPlayerTurn->user);
