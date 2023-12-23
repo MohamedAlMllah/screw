@@ -42,6 +42,7 @@ class GameController extends Controller
         $game->lose_score = $request->score;
         $game->password = $request->password;
         $game->number_of_players = $request->numberOfPlayers;
+        $game->number_of_shuffles = $request->numberOfShuffles;
         $game->save();
 
         $score = new Participant();
@@ -140,5 +141,40 @@ class GameController extends Controller
             'numberOfPlayers' => $game->participants->count(),
             'numberOfRounds' => $game->scores->max('round')
         ]);
+    }
+    public function roundOptions(Game $game)
+    {
+        return View('games.roundOptions', ['game' => $game]);
+    }
+    public function setRoundOptions(Request $request, Game $game)
+    {
+        $game->starting_covered_cards = $request->startingCoveredCards; //you can remove from DB
+        $game->save();
+        if ($request->startingCoveredCards == 4) { //all blind
+            foreach ($game->participants as $participant) {
+                $participant->skill = 'normal';
+                $participant->save();
+            }
+        }
+        return redirect()->route('home');
+    }
+    public function showAllPlayersCards(Game $game)
+    {
+        $participants = $game->participants;
+        return View('games.showAllPlayersCards', [
+            'game' => $game,
+            'participants' => $participants
+        ]);
+    }
+    public function endRound(Game $game)
+    {
+        $participant = Auth::user()->participant;
+        $participant->round_is_end = false;
+        $participant->save();
+        $participantsNotViewedAllCards = Participant::where('game_id', $game->id)->where('round_is_end', true)->get();
+        if (!$participantsNotViewedAllCards->count()) {
+            $game->endRound();
+        }
+        return redirect()->route('home');
     }
 }

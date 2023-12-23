@@ -18,6 +18,8 @@ return new class extends Migration
             $table->integer('lose_score');
             $table->string('password');
             $table->integer('number_of_players');
+            $table->integer('number_of_shuffles');
+            $table->string('starting_covered_cards')->default('not selected');
             $table->integer('round')->default('0');
             $table->integer('turns')->default('0');
             $table->timestamps();

@@ -28,7 +28,13 @@ class HomeController extends Controller
     public function index()
     {
         $participant = Auth::user()->participant;
-        if ($participant->skill == 'kshfElkoma') {
+        if($participant && $participant->round_is_end){
+            return redirect()->route('showAllPlayersCards', $participant->game_id);
+        }
+        if($participant && $participant->game->admin_id == Auth::user()->id && $participant->game->starting_covered_cards == 'not selected' && $participant->game->participants->count() == $participant->game->number_of_players){
+            return redirect()->route('roundOptions', $participant->game_id);
+        }
+        if ($participant && $participant->skill == 'kshfElkoma') {
             return redirect()->route('ekshif', $participant->game->getAwlElkomaElmqlopa()->id);
         }
         if ($participant && $participant->game->participants->count() == $participant->game->number_of_players) {
@@ -44,6 +50,7 @@ class HomeController extends Controller
             $announcements = Announcement::where('game_id', $participant->game->id)->orderBy('id', 'DESC')->take($numberOfPlayers)->get();
             $playersNotViewedTwoCards = Participant::where('game_id', $participant->game->id)->where('skill', 'showTwoCards')->get();
         }
+        //$participant->game->test();
         return view('home', [
             'games' => Game::all(),
             'user' => Auth::user(),

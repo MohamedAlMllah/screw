@@ -26,6 +26,10 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/games/{game}/join', [App\Http\Controllers\GameController::class, 'join'])->name('join');
     Route::post('/games/{game}/leave', [App\Http\Controllers\GameController::class, 'leave'])->name('leave');
     Route::get('/games/{game}/summary', [App\Http\Controllers\GameController::class, 'summary'])->name('summary');
+    Route::get('/games/{game}/round-options', [App\Http\Controllers\GameController::class, 'roundOptions'])->name('roundOptions');
+    Route::post('/games/{game}/set-round-options', [App\Http\Controllers\GameController::class, 'setRoundOptions'])->name('setRoundOptions');
+    Route::get('/games/{game}/players-cards', [App\Http\Controllers\GameController::class, 'showAllPlayersCards'])->name('showAllPlayersCards');
+    Route::get('/games/{game}/end-round', [App\Http\Controllers\GameController::class, 'endRound'])->name('endRound');
 
     Route::get('/games/{hand}/card', [App\Http\Controllers\HandController::class, 'ekshif'])->name('ekshif');
     Route::get('/games/{hand}/ermy', [App\Http\Controllers\HandController::class, 'ermy'])->name('ermy');

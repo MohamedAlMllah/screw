@@ -9,6 +9,10 @@
         waiting for other players to join {{$game->participants->count()}} / {{$game->number_of_players}}
     </h1>
     <meta http-equiv="refresh" content="5">
+    @elseif($game->participants->count() == $game->number_of_players && $game->starting_covered_cards == 'not selected')
+    <h1>
+        Waiting for the admin to start round.
+    </h1>
     @else
     @include('home.top')
     @include('home.center')
