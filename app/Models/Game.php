@@ -118,7 +118,7 @@ class Game extends Model
         $user->participant->save();
         $this->round++;
         $this->turns = 0;
-        $this->starting_covered_cards = 'not selected';
+        $this->multiple_score = 0;
         $this->save();
         $this->funat(1); //كومة مقلوبة
         $this->wz3();
@@ -139,10 +139,10 @@ class Game extends Model
     public function getAwlElkomaElmqlopa()
     {
         $awlElkomaElmqlopa = Hand::where('game_id', $this->id)->where('user_id', 1)->first();
-        if (!$awlElkomaElmqlopa && $this->number_of_shuffles == 2 && $this->turns < 70) {
+        if (!$awlElkomaElmqlopa && $this->number_of_shuffles == 2 && $this->turns < 60) { //18bsra+34=52
             $this->funat(2); // funat elkoma elmkshofa
         } elseif (!$awlElkomaElmqlopa) {
-            $this->endRound(); //تفنيطة واحدة
+            $this->showAllPlayersCards();
         }
         $awlElkomaElmqlopa = Hand::where('game_id', $this->id)->where('user_id', 1)->first();
         return $awlElkomaElmqlopa;
@@ -210,7 +210,11 @@ class Game extends Model
                 $lessScoreInThisRound = $playerRoundScore;
                 $winnerPlayerInThisRound = $this->admin;
                 $winnerCardsCount = $participantCardsCount;
-            } elseif ($playerRoundScore < $lessScoreInThisRound || ($playerRoundScore = $lessScoreInThisRound && $participant->is_screw == 1) || ($playerRoundScore == $lessScoreInThisRound && $participantCardsCount < $winnerCardsCount && $winnerPlayerInThisRound->participant->is_screw != 1)) {
+            } elseif (
+                $playerRoundScore < $lessScoreInThisRound ||
+                ($playerRoundScore == $lessScoreInThisRound && $participant->is_screw == 1) ||
+                ($playerRoundScore == $lessScoreInThisRound && $participantCardsCount < $winnerCardsCount && $winnerPlayerInThisRound->participant->is_screw != 1)
+            ) {
                 $lessScoreInThisRound = $playerRoundScore;
                 $winnerPlayerInThisRound = $participant->user;
             }
@@ -236,6 +240,7 @@ class Game extends Model
             }
         }
         $this->doubleScrewIfLosser($winnerPlayerInThisRound);
+        $this->multipleScore();
         $this->startRound($this->playerWithLessScore());
     }
     public function screwPlayer()
@@ -254,10 +259,15 @@ class Game extends Model
         }
     }
 
-    public function gameIsFinished()
+    public function isFinished()
     {
+        if ($this->is_fifnished) {
+            return true;
+        }
         foreach ($this->participants as $participant) {;
             if ($participant->user->totalScore() >= $this->lose_score) {
+                $this->is_fifnished = true;
+                $this->save();
                 return true;
             }
         }
@@ -272,11 +282,20 @@ class Game extends Model
     }
     public function showAllPlayersCards()
     {
-        foreach($this->participants as $participant){
+        foreach ($this->participants as $participant) {
             $participant->round_is_end = true;
             $participant->save();
         }
     }
+    public function multipleScore()
+    {
+        $scores = Score::where('game_id', $this->id)->where('round', $this->round)->get();
+        foreach ($scores as $score) {
+            $score->value = $score->value * $this->multiple_score;
+            $score->save();
+        }
+    }
+
     public function test()
     {
         $hands = $this->hands->where('user_id', 1);

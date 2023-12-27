@@ -30,10 +30,17 @@
 
                         </tbody>
                     </table>
+
+                    @if($game->isFinished())
+                    <div class="text-center">
+                        <a href="{{ route('leave', [$game->id]) }}" onclick="$('#formLeave').attr('action', this.href)" type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#leaveModal">Leave Game</a>
+                    </div>
+                    @endif
                 </div>
             </div>
         </div>
     </div>
 </div>
 
+@include('layouts.modals.leave')
 @endsection

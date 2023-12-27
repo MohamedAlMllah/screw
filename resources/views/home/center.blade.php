@@ -31,7 +31,7 @@
         @endforeach
         @endif
 
-        <div class="row text-center mt-2 mb-1">
+        <div class="row text-center mt-5 mb-1">
             @if($game->getPlayerInOrder($numberOfPlayers-1,$user)->participant->is_turn)
             <div style="font-size: 50px; color: red; margin-bottom: -20px;">&#11206;</div>
             @endif
@@ -131,7 +131,7 @@
         @endforeach
         @endif
 
-        <div class="row text-center mt-2 mb-1">
+        <div class="row text-center mt-5 mb-1">
             @if($game->getPlayerInOrder(1,$user)->participant->is_turn)
             <div style="font-size: 50px; color: red; margin-bottom: -20px;">&#11206;</div>
             @endif

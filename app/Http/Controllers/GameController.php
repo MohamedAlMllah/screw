@@ -116,9 +116,11 @@ class GameController extends Controller
             $game->admin_id = $game->getPlayerInOrder(1, Auth::user())->id;
             $game->save();
         }
-        $participant = Participant::where('user_id', Auth::user()->id);
-        Score::where('game_id', $game->id)->delete();
-        Hand::where('game_id', $game->id)->delete();
+        if (!$game->isFinished()) {
+            Score::where('game_id', $game->id)->delete();
+            Hand::where('game_id', $game->id)->delete();
+        }
+        $participant = Participant::where('user_id', Auth::user()->id)->first();
         $participant->delete();
 
         return redirect()->route('home');
@@ -135,6 +137,7 @@ class GameController extends Controller
             array_push($playersNames, $participant->user->name);
         }
         return View('games.summary', [
+            'game' => $game,
             'scores' => $scores,
             'totalScores' => $totalScores,
             'playersNames' => $playersNames,
@@ -148,7 +151,7 @@ class GameController extends Controller
     }
     public function setRoundOptions(Request $request, Game $game)
     {
-        $game->starting_covered_cards = $request->startingCoveredCards; //you can remove from DB
+        $game->multiple_score = $request->multipleScore;
         $game->save();
         if ($request->startingCoveredCards == 4) { //all blind
             foreach ($game->participants as $participant) {
@@ -158,12 +161,19 @@ class GameController extends Controller
         }
         return redirect()->route('home');
     }
+
     public function showAllPlayersCards(Game $game)
     {
+        $participantsNotViewedAllCards = Participant::where('game_id', $game->id)->where('round_is_end', true)->get();
+        if (!$participantsNotViewedAllCards->count()) {
+            return redirect()->route('home');
+        }
         $participants = $game->participants;
+        $participant = Auth::user()->participant;
         return View('games.showAllPlayersCards', [
             'game' => $game,
-            'participants' => $participants
+            'participants' => $participants,
+            'isReady' => !$participant->round_is_end
         ]);
     }
     public function endRound(Game $game)
@@ -174,7 +184,8 @@ class GameController extends Controller
         $participantsNotViewedAllCards = Participant::where('game_id', $game->id)->where('round_is_end', true)->get();
         if (!$participantsNotViewedAllCards->count()) {
             $game->endRound();
+            return redirect()->route('home');
         }
-        return redirect()->route('home');
+        return redirect()->route('showAllPlayersCards', $game->id);
     }
 }

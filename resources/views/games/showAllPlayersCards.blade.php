@@ -22,14 +22,22 @@
                             @endforeach
                         </div><br>
                         @endforeach
+                        @if($isReady)
+                        <h1>
+                            Waiting for other players.
+                        </h1>
+                        @else
                         <div class="row mt-3">
                             <div class="col text-center">
                                 <a href="{{ route('endRound', [$game->id]) }}" class="btn btn-outline-success fs-4 col-4">تمام</a>
                             </div>
                         </div>
+                        @endif
                     </div>
                 </div>
             </div>
         </div>
     </div>
     @endsection
+
+    <meta http-equiv="refresh" content="5">
