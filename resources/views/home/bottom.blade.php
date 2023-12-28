@@ -1,3 +1,9 @@
+<div class="row text-center mb-1">
+    @if($user->participant->is_turn)
+    <div style="font-size: 30px; color: red; margin-bottom: -10px;"> &#9947;</div>
+    @endif
+    <h4>{{$user->name}}&nbsp;(&nbsp;{{$user->totalScore()}}&nbsp;)</h4>
+</div>
 <div class="row gx-0">
     <div class="col-5">
         @if ($announcements->count())

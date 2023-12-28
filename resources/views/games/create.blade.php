@@ -27,6 +27,13 @@
                                 <option value="6">6</option>
                             </select>
                         </div>
+                        <h5 class="mb-1 mt-3">Number Of Shuffles</h5>
+                        <div class="form-group">
+                            <select class="form-select" name="numberOfShuffles">
+                                <option selected value="1">1</option>
+                                <option value="2">2</option>
+                            </select>
+                        </div>
                         <h5 class="mb-1 mt-3">Password</h5>
                         <div class="form-group">
                             <input type="text" class="form-control @error('password') is-invalid @enderror" placeholder="Enter password" value="{{old('password')}}" name="password">

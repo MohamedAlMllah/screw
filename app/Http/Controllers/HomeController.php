@@ -28,11 +28,19 @@ class HomeController extends Controller
     public function index()
     {
         $participant = Auth::user()->participant;
-        if ($participant->skill == 'kshfElkoma') {
+        if ($participant && $participant->round_is_end) {
+            if (!$participant->game->participants->where('skill', '!=', 'normal')->count()) {
+                return redirect()->route('showAllPlayersCards', $participant->game_id);
+            }
+        }
+        if ($participant && $participant->game->admin_id == Auth::user()->id && $participant->game->multiple_score == 0 && $participant->game->participants->count() == $participant->game->number_of_players && !$participant->game->isFinished()) {
+            return redirect()->route('roundOptions', $participant->game_id);
+        }
+        if ($participant && $participant->skill == 'kshfElkoma') {
             return redirect()->route('ekshif', $participant->game->getAwlElkomaElmqlopa()->id);
         }
         if ($participant && $participant->game->participants->count() == $participant->game->number_of_players) {
-            if ($participant->game->gameIsFinished()) {
+            if ($participant->game->isFinished()) {
                 return redirect()->route('summary', $participant->game->id);
             }
             $elkomaElmqlopaCount = Hand::where('game_id', $participant->game->id)->where('user_id', 1)->count();
@@ -45,7 +53,7 @@ class HomeController extends Controller
             $playersNotViewedTwoCards = Participant::where('game_id', $participant->game->id)->where('skill', 'showTwoCards')->get();
         }
         return view('home', [
-            'games' => Game::all(),
+            'games' => Game::all()->where('is_finished', false),
             'user' => Auth::user(),
             'game' => $participant->game ?? null,
             'numberOfPlayers' => $numberOfPlayers ?? 0,

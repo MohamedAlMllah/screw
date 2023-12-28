@@ -21,6 +21,7 @@ return new class extends Migration
             $table->integer('is_screw')->default('0');
             $table->string('skill')->default('showTwoCards');
             $table->json('kaab_dayer')->default('[]');
+            $table->boolean('round_is_end')->default('0');
             $table->timestamps();
         });
     }

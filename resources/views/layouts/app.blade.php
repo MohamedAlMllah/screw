@@ -26,7 +26,7 @@
             <div class="container">
                 <a class="navbar-brand" href="{{ url('/home') }}">
                     {{ config('app.name', 'Laravel') }}
-                    <img src="{{asset('images/Logo.png')}}" alt="Bazooka" class="col-2" style="opacity:.8">
+                    <img src="{{asset('images/Logo.png')}}" alt="Screw" class="col-2" style="opacity:.8">
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
                     <span class="navbar-toggler-icon"></span>
