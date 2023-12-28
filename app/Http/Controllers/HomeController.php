@@ -52,7 +52,6 @@ class HomeController extends Controller
             $announcements = Announcement::where('game_id', $participant->game->id)->orderBy('id', 'DESC')->take($numberOfPlayers)->get();
             $playersNotViewedTwoCards = Participant::where('game_id', $participant->game->id)->where('skill', 'showTwoCards')->get();
         }
-        //$participant->game->test();
         return view('home', [
             'games' => Game::all()->where('is_finished', false),
             'user' => Auth::user(),

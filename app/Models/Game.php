@@ -74,7 +74,6 @@ class Game extends Model
     }
     public function funat($user_id)
     {
-        //should exept getAwlElkomaElmkshofa case user_id ==2
         if ($user_id == 2) {
             $komaMtfunata = Hand::where('id', '!=', $this->getAwlElkomaElmkshofa()->id)->where('game_id', $this->id)->where('user_id', $user_id)->inRandomOrder()->get();
             $cardsIds = $komaMtfunata->pluck('card_id');
@@ -294,17 +293,5 @@ class Game extends Model
             $score->value = $score->value * $this->multiple_score;
             $score->save();
         }
-    }
-
-    public function test()
-    {
-        $hands = $this->hands->where('user_id', 1);
-        $firstHand = $this->hands->where('user_id', 1)->first();
-        foreach ($hands as $hand) {
-            $hand->user_id = 2;
-            $hand->save();
-        }
-        $firstHand->user_id = 1;
-        $firstHand->save();
     }
 }
