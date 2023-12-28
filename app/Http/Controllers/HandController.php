@@ -15,6 +15,7 @@ class HandController extends Controller
         $kaabDayer = json_decode($participant->kaab_dayer, true);
         $skill = $participant->skill;
         if (
+            (!$participant->is_turn && $participant->skill != 'showTwoCards') ||
             $participant->skill == 'normal' && $hand->user_id != 1 ||
             $participant->skill == 'kaabDayer' && !in_array($hand->user_id, $kaabDayer)
         ) {
@@ -42,10 +43,10 @@ class HandController extends Controller
                 $participant->kaab_dayer = array_values(array_diff($kaabDayer, array($hand->user_id)));
                 $participant->save();
                 if (count($kaabDayer) == 1) {
-                    $participant->endSkill();//here
+                    $participant->endSkill(); //here
                 }
             } else {
-                $participant->endSkill();//and here last play in round  
+                $participant->endSkill(); //and here last play in round  
             }
         }
         return View('cards.kshf', [
@@ -114,6 +115,9 @@ class HandController extends Controller
         if ($participant->skill == 'kshfElkoma') {
             return redirect()->route('ekshif', $participant->game->getAwlElkomaElmqlopa()->id)->with('error', "Don't Cheat");
         }
+        if (!$participant->is_turn) {
+            return redirect()->route('home')->with('error', "Don't Cheat");
+        }
         $awlElkomaElmkshofa = $hand->game->getAwlElkomaElmkshofa();
         if ($hand->card->id == $awlElkomaElmkshofa->card->id || abs($hand->card->value - $awlElkomaElmkshofa->card->value) == 25 || $hand->user->participant->skill == 'bsra') {
 
@@ -148,6 +152,9 @@ class HandController extends Controller
         if ($participant->skill == 'kshfElkoma' && $hand->id != $participant->game->getAwlElkomaElmqlopa()->id) {
             return redirect()->route('ekshif', $participant->game->getAwlElkomaElmqlopa()->id)->with('error', "Don't Cheat");
         }
+        if (!$participant->is_turn) {
+            return redirect()->route('home')->with('error', "Don't Cheat");
+        }
         if ($participant->skill == 'kshfElkoma') {
             $participant->skill = 'normal';
             $participant->save();
@@ -159,6 +166,10 @@ class HandController extends Controller
     }
     public function bdelWith(Hand $hand, Hand $myHand)
     {
+        $participant = Auth::user()->participant;
+        if (!$participant->is_turn) {
+            return redirect()->route('home')->with('error', "Don't Cheat");
+        }
         $cardId = $hand->card_id;
         $hand->card_id = $myHand->card_id;
         $hand->save();
@@ -188,7 +199,7 @@ class HandController extends Controller
 
     public function screw(Participant $participant)
     {
-        if ($participant->skill != 'normal') {
+        if ($participant->skill != 'normal' || !$participant->is_turn) {
             return redirect()->route('home')->with('error', "Don't Cheat");
         }
         $participant->is_screw = 1;

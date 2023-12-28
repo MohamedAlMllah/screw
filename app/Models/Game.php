@@ -266,7 +266,7 @@ class Game extends Model
         }
         foreach ($this->participants as $participant) {;
             if ($participant->user->totalScore() >= $this->lose_score) {
-                $this->is_fifnished = true;
+                $this->is_finished = true;
                 $this->save();
                 return true;
             }
