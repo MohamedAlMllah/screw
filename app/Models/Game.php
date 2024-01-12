@@ -260,11 +260,11 @@ class Game extends Model
 
     public function isFinished()
     {
-        if ($this->is_fifnished) {
+        if ($this->is_finished) {
             return true;
         }
         foreach ($this->participants as $participant) {;
-            if ($participant->user->totalScore() >= $this->lose_score) {
+            if ($participant->user->totalScore($this) >= $this->lose_score) {
                 $this->is_finished = true;
                 $this->save();
                 return true;

@@ -116,32 +116,46 @@ class GameController extends Controller
             $game->admin_id = $game->getPlayerInOrder(1, Auth::user())->id;
             $game->save();
         }
-        if (!$game->isFinished()) {
+        if ($game->participants->count() == 1 && !$game->isFinished()) {
+            $game->delete();
+        } elseif (!$game->isFinished()) {
             Score::where('game_id', $game->id)->delete();
             Hand::where('game_id', $game->id)->delete();
         }
         $participant = Participant::where('user_id', Auth::user()->id)->first();
-        $participant->delete();
+        if ($participant) {
+            $participant->delete();
+        }
 
         return redirect()->route('home');
     }
 
     public function summary(Game $game)
     {
+        $firstRoiundScores = Score::where('game_id', $game->id)->where('round', 1)->get();
+        $players = [];
+        foreach ($firstRoiundScores as $score) {
+            array_push($players, $score->user);
+        }
         $scores = [];
         $totalScores = [];
         $playersNames = [];
-        foreach ($game->participants as $participant) {
-            array_push($scores, $participant->user->scores);
-            array_push($totalScores, $participant->user->totalScore());
-            array_push($playersNames, $participant->user->name);
+        foreach ($players as $player) {
+            array_push($scores, $player->scores);
+            array_push($totalScores, $player->totalScore($game));
+            array_push($playersNames, $player->name);
+        }
+        if ($game->isFinished()) {
+            $numberOfPlayers = $game->number_of_players;
+        } else {
+            $numberOfPlayers = $game->participants->count();
         }
         return View('games.summary', [
             'game' => $game,
             'scores' => $scores,
             'totalScores' => $totalScores,
             'playersNames' => $playersNames,
-            'numberOfPlayers' => $game->participants->count(),
+            'numberOfPlayers' => $numberOfPlayers,
             'numberOfRounds' => $game->scores->max('round')
         ]);
     }

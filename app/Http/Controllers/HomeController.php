@@ -28,6 +28,9 @@ class HomeController extends Controller
     public function index()
     {
         $participant = Auth::user()->participant;
+        if ($participant && $participant->game->isFinished()) {
+            return redirect()->route('summary', $participant->game->id);
+        }
         if ($participant && $participant->round_is_end) {
             if (!$participant->game->participants->where('skill', '!=', 'normal')->count()) {
                 return redirect()->route('showAllPlayersCards', $participant->game_id);
@@ -40,9 +43,6 @@ class HomeController extends Controller
             return redirect()->route('ekshif', $participant->game->getAwlElkomaElmqlopa()->id);
         }
         if ($participant && $participant->game->participants->count() == $participant->game->number_of_players) {
-            if ($participant->game->isFinished()) {
-                return redirect()->route('summary', $participant->game->id);
-            }
             $elkomaElmqlopaCount = Hand::where('game_id', $participant->game->id)->where('user_id', 1)->count();
             $awlElkomaElmkshofa = $participant->game->getAwlElkomaElmkshofa();
             $awlElkomaElmqlopa = $participant->game->getAwlElkomaElmqlopa();

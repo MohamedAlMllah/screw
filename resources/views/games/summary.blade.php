@@ -6,6 +6,9 @@
         <div class="col-12 col-md-8">
             <div class="card">
                 <div class="card-body">
+                    @if(!count($scores))
+                    <h1>No Scores yet</h1>
+                    @else
                     <table class="table text-center">
                         <thead>
                             <tr>
@@ -30,6 +33,7 @@
 
                         </tbody>
                     </table>
+                    @endif
 
                     @if($game->isFinished())
                     <div class="text-center">
