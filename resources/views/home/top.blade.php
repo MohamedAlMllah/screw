@@ -3,7 +3,7 @@
     @if($game->getPlayerInOrder($numberOfPlayers/2,$user)->participant->is_turn)
     <div style="font-size: 30px; color: red; margin-bottom: -10px;"> &#9947;</div>
     @endif
-    <h4>{{$game->getPlayerInOrder($numberOfPlayers/2,$user)->name}}&nbsp;(&nbsp;{{$game->getPlayerInOrder($numberOfPlayers/2,$user)->totalScore()}}&nbsp;)</h4>
+    <h4>{{$game->getPlayerInOrder($numberOfPlayers/2,$user)->name}}&nbsp;(&nbsp;{{$game->getPlayerInOrder($numberOfPlayers/2,$user)->totalScore($game)}}&nbsp;)</h4>
 </div>
 <div class="row mb-5 gx-0">
     <div class="col-5">&nbsp;</div>

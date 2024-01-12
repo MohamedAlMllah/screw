@@ -72,10 +72,10 @@ class User extends Authenticatable
         }
         return $score;
     }
-    public function totalScore()
+    public function totalScore(Game $game)
     {
         $totalScore = 0;
-        foreach ($this->scores as $score) {
+        foreach ($this->scores->where('game_id', $game->id) as $score) {
             $totalScore += $score->value;
         }
         return $totalScore;

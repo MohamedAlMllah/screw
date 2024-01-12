@@ -6,7 +6,7 @@
             @if($game->getPlayerInOrder($numberOfPlayers-2,$user)->participant->is_turn)
             <div style="font-size: 30px; color: red; margin-bottom: -10px;"> &#9947;</div>
             @endif
-            <h4>{{$game->getPlayerInOrder($numberOfPlayers-2,$user)->name}}&nbsp;(&nbsp;{{$game->getPlayerInOrder($numberOfPlayers-2,$user)->totalScore()}}&nbsp;)</h4>
+            <h4>{{$game->getPlayerInOrder($numberOfPlayers-2,$user)->name}}&nbsp;(&nbsp;{{$game->getPlayerInOrder($numberOfPlayers-2,$user)->totalScore($game)}}&nbsp;)</h4>
         </div>
         @foreach($game->getPlayerInOrder($numberOfPlayers-2,$user)->hands->sortBy('index') as $hand)
         <div class="row gx-0 align-items-top text-center">
@@ -35,7 +35,7 @@
             @if($game->getPlayerInOrder($numberOfPlayers-1,$user)->participant->is_turn)
             <div style="font-size: 30px; color: red; margin-bottom: -10px;"> &#9947;</div>
             @endif
-            <h4>{{$game->getPlayerInOrder($numberOfPlayers-1,$user)->name}}&nbsp;(&nbsp;{{$game->getPlayerInOrder($numberOfPlayers-1,$user)->totalScore()}}&nbsp;)</h4>
+            <h4>{{$game->getPlayerInOrder($numberOfPlayers-1,$user)->name}}&nbsp;(&nbsp;{{$game->getPlayerInOrder($numberOfPlayers-1,$user)->totalScore($game)}}&nbsp;)</h4>
         </div>
         @foreach($game->getPlayerInOrder($numberOfPlayers-1,$user)->hands->sortBy('index') as $hand)
         <div class="row gx-0 align-items-top text-center">
@@ -106,7 +106,7 @@
             @if($game->getPlayerInOrder(2,$user)->participant->is_turn)
             <div style="font-size: 30px; color: red; margin-bottom: -10px;"> &#9947;</div>
             @endif
-            <h4>{{$game->getPlayerInOrder(2,$user)->name}}&nbsp;(&nbsp;{{$game->getPlayerInOrder(2,$user)->totalScore()}}&nbsp;)</h4>
+            <h4>{{$game->getPlayerInOrder(2,$user)->name}}&nbsp;(&nbsp;{{$game->getPlayerInOrder(2,$user)->totalScore($game)}}&nbsp;)</h4>
         </div>
         @foreach($game->getPlayerInOrder(2,$user)->hands->sortBy('index') as $hand)
         <div class="row gx-0 text-center">
@@ -135,7 +135,7 @@
             @if($game->getPlayerInOrder(1,$user)->participant->is_turn)
             <div style="font-size: 30px; color: red; margin-bottom: -10px;"> &#9947;</div>
             @endif
-            <h4>{{$game->getPlayerInOrder(1,$user)->name}}&nbsp;(&nbsp;{{$game->getPlayerInOrder(1,$user)->totalScore()}}&nbsp;)</h4>
+            <h4>{{$game->getPlayerInOrder(1,$user)->name}}&nbsp;(&nbsp;{{$game->getPlayerInOrder(1,$user)->totalScore($game)}}&nbsp;)</h4>
         </div>
         @foreach($game->getPlayerInOrder(1,$user)->hands->sortBy('index') as $hand)
         <div class="row gx-0 text-center">
