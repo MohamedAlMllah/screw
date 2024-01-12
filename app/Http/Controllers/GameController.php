@@ -132,9 +132,9 @@ class GameController extends Controller
 
     public function summary(Game $game)
     {
-        $firstRoiundScores = Score::where('game_id', $game->id)->where('round', 1)->get();
+        $firstRoundScores = Score::where('game_id', $game->id)->where('round', 1)->get();
         $players = [];
-        foreach ($firstRoiundScores as $score) {
+        foreach ($firstRoundScores as $score) {
             array_push($players, $score->user);
         }
         $scores = [];
