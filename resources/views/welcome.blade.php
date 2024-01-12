@@ -12,7 +12,7 @@
 
     <style>
         body {
-            background-image: url('{{asset('images/landingPageBG.JPG')}}');
+            background-image: url('{{asset('images/landingPageBG.jpg')}}');
             background-size: auto;
             background-position: center;
             background-repeat: no-repeat;
@@ -23,7 +23,7 @@
 
 <body>
     <div class="ml-4 mt-4">
-        <img src="{{asset('images/Logo.png')}}" style="width: 10vh;" alt="wrong">
+        <img src="{{asset('images/logo.png')}}" style="width: 10vh;" alt="wrong">
 
         <h4 class="mt-3">Screw</h4>
     </div>
