@@ -152,7 +152,9 @@ class GameController extends Controller
         }
         return View('games.summary', [
             'game' => $game,
+            'gameIsFinished' => $game->isFinished(),
             'scores' => $scores,
+            'numberOfScores' => count($scores),
             'totalScores' => $totalScores,
             'playersNames' => $playersNames,
             'numberOfPlayers' => $numberOfPlayers,
@@ -184,8 +186,22 @@ class GameController extends Controller
         }
         $participants = $game->participants;
         $participant = Auth::user()->participant;
+
+        $data = [];
+        foreach ($participants as $participant) {
+            $cards = [];
+            foreach ($participant->user->hands as $hand) {
+                array_push($cards, $hand->card);
+            }
+            $playerData = [
+                'playerName' => $participant->user->name,
+                'playerHands' => $participant->user->hands,
+            ];
+            array_push($data, $playerData);
+        }
         return View('games.showAllPlayersCards', [
             'game' => $game,
+            'data' => $data,
             'participants' => $participants,
             'isReady' => !$participant->round_is_end
         ]);

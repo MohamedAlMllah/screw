@@ -51,8 +51,11 @@ class HandController extends Controller
         }
         return View('cards.kshf', [
             'hand' => $hand,
+            'card' => $hand->card,
             'hand1' => $hand1 ?? null,
+            'card1' => $hand1->card ?? null,
             'hand2' => $hand2 ?? null,
+            'card2' => $hand2->card ?? null,
             'skill' => $skill,
             'user' => Auth::user()
         ]);
@@ -161,7 +164,7 @@ class HandController extends Controller
         }
         return View('cards.bdel', [
             'bdelWithHand' => $hand,
-            'user' => Auth::user()
+            'userHands' => Auth::user()->hands->sortBy('index')
         ]);
     }
     public function bdelWith(Hand $hand, Hand $myHand)

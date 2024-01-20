@@ -17,13 +17,13 @@
                         <div class="col-4 offset-2">
                             <div class="card text-center">
                                 1
-                                <img src="{{asset($hand1->card->image)}}" class="card-img-top img-fluid" alt="...">
+                                <img src="{{asset($card1->image)}}" class="card-img-top img-fluid" alt="...">
                             </div>
                         </div>
                         <div class="col-4">
                             <div class="card text-center">
                                 2
-                                <img src="{{asset($hand2->card->image)}}" class="card-img-top img-fluid" alt="...">
+                                <img src="{{asset($card2->image)}}" class="card-img-top img-fluid" alt="...">
                             </div>
                         </div>
                     </div>
@@ -36,7 +36,7 @@
                     <div class="col-4 offset-4">
                         <div class="card text-center">
                             {{$hand->index}}
-                            <img src="{{asset($hand->card->image)}}" class="card-img-top img-fluid" alt="...">
+                            <img src="{{asset($card->image)}}" class="card-img-top img-fluid" alt="...">
                         </div>
                     </div>
                     <div class="row mt-3">
@@ -47,7 +47,7 @@
                     @else
                     <div class="col-4 offset-4">
                         <div class="card">
-                            <img src="{{asset($hand->card->image)}}" class="card-img-top img-fluid" alt="...">
+                            <img src="{{asset($card->image)}}" class="card-img-top img-fluid" alt="...">
                             <div class="card-body text-center">
                                 <div class="btn-group" role="group" aria-label="Basic outlined example">
                                     <a href="{{ route('bdel', [$hand->id]) }}" type="button" class="btn btn-outline-primary fs-4">بـــدل</a>

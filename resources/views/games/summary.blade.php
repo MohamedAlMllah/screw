@@ -6,7 +6,7 @@
         <div class="col-12 col-md-8">
             <div class="card">
                 <div class="card-body">
-                    @if(!count($scores))
+                    @if(!$numberOfScores)
                     <h1>No Scores yet</h1>
                     @else
                     <table class="table text-center">
@@ -35,7 +35,7 @@
                     </table>
                     @endif
 
-                    @if($game->isFinished())
+                    @if($gameIsFinished)
                     <div class="text-center">
                         <a href="{{ route('leave', [$game->id]) }}" onclick="$('#formLeave').attr('action', this.href)" type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#leaveModal">Leave Game</a>
                     </div>
