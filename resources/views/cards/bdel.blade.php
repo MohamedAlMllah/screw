@@ -9,7 +9,7 @@
                     <h3>عايز تبدله مع انهي كارت ؟</h3>
                     <div class="row">
                         <div class="col-2">&nbsp;</div>
-                        @foreach($user->hands->sortBy('index') as $hand)
+                        @foreach($userHands as $hand)
                         <div class="col-2">
                             <div class="card text-center">
                                 {{$hand->index}}
