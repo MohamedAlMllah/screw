@@ -28,6 +28,28 @@ class HomeController extends Controller
     public function index()
     {
         $participant = Auth::user()->participant;
+        $games = [];
+        foreach(Game::all()->where('is_finished', false) as $game){
+            $gameData = [
+                'admin' => $game->admin,
+                'game' => $game,
+                'participantsCount' => $game->participants()->count()
+            ]; 
+            array_push($games, $gameData);
+        }
+
+        $participants = [];
+        if($participant){
+            foreach($participant->game->participants as $participant){
+                $participantData = [
+                    'name' => $participant->user->name,
+                    'participant' => $participant,
+                ]; 
+                array_push($participants, $participantData);
+            }
+        }
+
+
         if ($participant && $participant->game->isFinished()) {
             return redirect()->route('summary', $participant->game->id);
         }
@@ -53,9 +75,11 @@ class HomeController extends Controller
             $playersNotViewedTwoCards = Participant::where('game_id', $participant->game->id)->where('skill', 'showTwoCards')->get();
         }
         return view('home', [
-            'games' => Game::all()->where('is_finished', false),
+            'games' => $games,
             'user' => Auth::user(),
+            'participant' => Auth::user()->participant,
             'game' => $participant->game ?? null,
+            'gameParticipants' => $participants ?? null,
             'numberOfPlayers' => $numberOfPlayers ?? 0,
             'playersNotViewedTwoCards' => $playersNotViewedTwoCards ?? collect(),
             'skill' => $skill ?? 'normal',
