@@ -89,7 +89,6 @@ class GameController extends Controller
 
     public function join(Game $game, Request $request)
     {
-        return '555';
         if ($request->password != $game->password)
             return redirect()->route('home')->with('error', 'wrong password');
         if (Auth::user()->participant)

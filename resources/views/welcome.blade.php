@@ -1,18 +1,10 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+@extends('layouts.app')
 
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-
-    <link rel="icon" href="{{asset('images/logo.png')}}" type="image/icon type">
-    <title>سكرويت</title>
-
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+@section('content')
+<div id="h">
 
     <style>
-        body {
+        #h {
             background-image: url('{{asset(' images/landingPageBG.jpg')}}');
             background-size: auto;
             background-position: center;
@@ -20,16 +12,9 @@
             background-size: 100% 100%;
         }
     </style>
-</head>
 
-<body>
-    <div class="ml-4 mt-4">
-        <img src="{{asset('images/logo.png')}}" style="width: 10vh;" alt="wrong">
-
-        <h4 class="mt-3">Screwit</h4>
-    </div>
     <header class="masthead d-flex aligns-items-center justify-content-center">
-        <div style="padding-top: 50vh; padding-bottom: 20vh;" class="container  text-center aligns-items-center">
+        <div style="padding-top: 60vh; padding-bottom: 19vh;" class="container  text-center aligns-items-center">
             @if (Route::has('login'))
             @auth
             <a href="{{ route('home') }}" class="btn btn-primary col-md-3 col-5">
@@ -49,9 +34,5 @@
             @endif
         </div>
     </header>
-
-
-
-</body>
-
-</html>
+</div>
+@endsection
