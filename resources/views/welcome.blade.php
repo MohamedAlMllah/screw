@@ -5,7 +5,7 @@
 
     <style>
         #h {
-            background-image: url('{{asset(' images/landingPageBG.jpg')}}');
+            background-image: url('{{asset('images/landingPageBG.jpg')}}');
             background-size: auto;
             background-position: center;
             background-repeat: no-repeat;
