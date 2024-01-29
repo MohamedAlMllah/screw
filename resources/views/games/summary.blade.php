@@ -4,7 +4,7 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-12 col-md-8">
-            <div class="card">
+            <div class="card mt-4">
                 <div class="card-body">
                     @if(!$numberOfScores)
                     <h1>No Scores yet</h1>

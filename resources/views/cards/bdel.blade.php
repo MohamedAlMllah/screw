@@ -4,7 +4,7 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-12 col-md-8">
-            <div class="card">
+            <div class="card mt-4">
                 <div class="card-body">
                     <h3>عايز تبدله مع انهي كارت ؟</h3>
                     <div class="row">
