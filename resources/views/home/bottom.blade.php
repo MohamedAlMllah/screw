@@ -52,12 +52,10 @@
                     @else
                     <img src="{{asset('images/cards/backHalf.png')}}" class="card-img-top img-fluid rounded-0" alt="...">
                     @endif
-                    @if($gameParticipants[0]['isTurn'] && $skill == 'normal' && !$playersNotViewedTwoCardsCount)
+                    @if(($gameParticipants[0]['isTurn'] && $skill == 'normal' && !$playersNotViewedTwoCardsCount) || ($gameParticipants[0]['isTurn'] && $skill == 'bsra'))
                     <a href="{{ route('bsra', [$hand->id]) }}" class="btn btn-outline-warning mt-1">بصرة</a>
                     @elseif($gameParticipants[0]['isTurn'] && ($skill == 'bossFeWrqtak' || ($skill == 'kaabDayer' && in_array($gameParticipants[0]['participant']->user_id, json_decode($gameParticipants[0]['participant']->kaab_dayer, true)))))
                     <a href="{{ route('ekshif', [$hand->id]) }}" class="btn btn-outline-primary mt-1">اكشف</a>
-                    @elseif($gameParticipants[0]['isTurn'] && $skill == 'bsra')
-                    <a href="{{ route('bsra', [$hand->id]) }}" class="btn btn-outline-warning mt-1">بصرة</a>
                     @endif
                 </div>
             </div>

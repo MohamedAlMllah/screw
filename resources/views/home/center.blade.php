@@ -26,7 +26,7 @@
                 @if($gameParticipants[0]['isTurn'] && ($skill == 'bossFeWrqtGherak' || ($skill == 'kaabDayer' && in_array($gameParticipants[$numberOfPlayers-2]['participant']->user_id, json_decode($gameParticipants[0]['participant']->kaab_dayer, true)))))
                 <a href="{{ route('ekshif', [$hand->id]) }}" class="btn btn-outline-primary border-0" style="padding: 0;">&nbsp;اكشف&nbsp;</a>
                 @elseif($gameParticipants[0]['isTurn'] && $skill == 'KhodWHat')
-                <a href="{{ route('bdel', [$hand->id]) }}" type="button" class="btn btn-outline-success border-0" style="padding: 0;">&nbsp;بـــدل&nbsp;</a>
+                <a href="{{ route('bdel', [$hand->id]) }}" class="btn btn-outline-success border-0" style="padding: 0;">&nbsp;بـــدل&nbsp;</a>
                 @endif
             </div>
         </div>
