@@ -28,6 +28,50 @@ class HomeController extends Controller
     public function index()
     {
         $participant = Auth::user()->participant;
+        $games = [];
+        foreach (Game::all()->where('is_finished', false) as $game) {
+            $gameData = [
+                'admin' => $game->admin,
+                'game' => $game,
+                'participantsCount' => $game->participants()->count()
+            ];
+            array_push($games, $gameData);
+        }
+        $participants = [];
+        if ($participant) {
+            $currentParticipantIsFound = 0;
+            foreach ($participant->game->participants as $participantFromList) {
+                if ($participant->id != $participantFromList->id && !$currentParticipantIsFound) {
+                    continue;
+                } else {
+                    $currentParticipantIsFound = 1;
+                }
+                $participantData = [
+                    'name' => $participantFromList->user->name,
+                    'hands' => $participantFromList->user->hands->sortBy('index'),
+                    'participant' => $participantFromList,
+                    'totalScore' => $participantFromList->user->totalScore($participant->game),
+                    'skill' => $participantFromList->skill,
+                    'isTurn' => $participantFromList->is_turn
+                ];
+                array_push($participants, $participantData);
+            }
+            foreach ($participant->game->participants as $participantFromList) {
+                if ($participant->id == $participantFromList->id) {
+                    break;
+                }
+                $participantData = [
+                    'name' => $participantFromList->user->name,
+                    'hands' => $participantFromList->user->hands->sortBy('index'),
+                    'participant' => $participantFromList,
+                    'totalScore' => $participantFromList->user->totalScore($participant->game),
+                    'skill' => $participantFromList->skill,
+                    'isTurn' => $participantFromList->is_turn
+                ];
+                array_push($participants, $participantData);
+            }
+        }
+
         if ($participant && $participant->game->isFinished()) {
             return redirect()->route('summary', $participant->game->id);
         }
@@ -50,17 +94,34 @@ class HomeController extends Controller
             $skill = $participant->skill;
             $numberOfPlayers = $participant->game->participants->count();
             $announcements = Announcement::where('game_id', $participant->game->id)->orderBy('id', 'DESC')->take($numberOfPlayers)->get();
-            $playersNotViewedTwoCards = Participant::where('game_id', $participant->game->id)->where('skill', 'showTwoCards')->get();
+            $playersNotViewedTwoCardsCount = Participant::where('game_id', $participant->game->id)->where('skill', 'showTwoCards')->get()->count();
+            if ($game->screwPlayer()) {
+                if ($game->screwPlayer()->participant->is_screw == 1) {
+                    $screwPlayerType = ' Screw';
+                } else {
+                    $screwPlayerType = ' Finished Cards';
+                }
+                $screwPlayer = [
+                    'name' => $game->screwPlayer()->name,
+                    'message' => $screwPlayerType
+                ];
+            }
+            $canScrew = $game->canScrew(Auth::user());
         }
         return view('home', [
-            'games' => Game::all()->where('is_finished', false),
+            'games' => $games,
             'user' => Auth::user(),
+            'participant' => Auth::user()->participant,
             'game' => $participant->game ?? null,
+            'gameParticipants' => $participants ?? null,
             'numberOfPlayers' => $numberOfPlayers ?? 0,
-            'playersNotViewedTwoCards' => $playersNotViewedTwoCards ?? collect(),
+            'playersNotViewedTwoCardsCount' => $playersNotViewedTwoCardsCount ?? collect(),
+            'canScrew' => $canScrew ?? false,
+            'screwPlayer' => $screwPlayer ?? [],
             'skill' => $skill ?? 'normal',
             'announcements' => $announcements ?? null,
             'awlElkomaElmkshofa' => $awlElkomaElmkshofa ?? null,
+            'awlElkomaElmkshofaCard' => $awlElkomaElmkshofa->card ?? null,
             'awlElkomaElmqlopa' => $awlElkomaElmqlopa ?? null,
             'elkomaElmkshofaCount' => $elkomaElmkshofaCount ?? null,
             'elkomaElmqlopaCount' => $elkomaElmqlopaCount ?? null,
